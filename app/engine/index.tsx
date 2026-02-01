@@ -270,7 +270,6 @@ export default function CameraEditor() {
 
         // Small delay to ensure React has rendered the container
         const timeoutId = setTimeout(() => {
-            console.log('wwww')
             if (!previewContainerRef.current) {
                 console.warn('[Preview] Container ref not available');
                 return;
@@ -289,8 +288,6 @@ export default function CameraEditor() {
             whiteboardInstance.current = wb;
 
             // Map Editor Scene to Whiteboard Scene
-            console.log('[Preview] Config layers:', previewConfig.layers);
-            console.log('[Preview] Config cameras:', previewConfig.cameras);
             wb.addStoreScenes([{
                 id: previewConfig.id,
                 background: previewConfig.background?.color || '#ffffff',
@@ -310,7 +307,6 @@ export default function CameraEditor() {
                     }
                 })) : []
             }], 'single').then(() => {
-                console.log('ittttttt')
                 wb.play();
             });
         }, 50);
