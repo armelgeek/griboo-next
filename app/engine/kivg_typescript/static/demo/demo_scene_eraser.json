@@ -1,0 +1,198 @@
+{
+  "title": "Scene Eraser Demo",
+  "description": "Demonstrates erasing entire scenes with multiple layers in different orders",
+  "scene_width": 1280,
+  "scene_height": 720,
+  "background": "#F5F5F5",
+  "fps": 30,
+  "slides": [
+    {
+      "id": "slide_1_build_scene",
+      "description": "Build a complete scene with multiple layers",
+      "duration": 4,
+      "skip_rate": 5,
+      "mode": "draw",
+      "layers": [
+        {
+          "id": "background_layer",
+          "type": "shape",
+          "shape_type": "rectangle",
+          "position": {
+            "x": 100,
+            "y": 100
+          },
+          "width": 1080,
+          "height": 520,
+          "fill_color": "#ECF0F1",
+          "stroke_color": "#BDC3C7",
+          "stroke_width": 2,
+          "mode": "draw",
+          "animation_order": 1
+        },
+        {
+          "id": "header_layer",
+          "type": "text",
+          "text": "Scene Eraser Demo",
+          "position": {
+            "x": 640,
+            "y": 80
+          },
+          "text_config": {
+            "font": "Patrick Hand",
+            "size": 42,
+            "color": "#2C3E50",
+            "align": "center"
+          },
+          "mode": "draw",
+          "animation_order": 2
+        },
+        {
+          "id": "element_1",
+          "type": "shape",
+          "shape_type": "circle",
+          "position": {
+            "x": 250,
+            "y": 350
+          },
+          "radius": 80,
+          "fill_color": "#E74C3C",
+          "mode": "draw",
+          "animation_order": 3
+        },
+        {
+          "id": "element_2",
+          "type": "shape",
+          "shape_type": "rectangle",
+          "position": {
+            "x": 540,
+            "y": 270
+          },
+          "width": 200,
+          "height": 160,
+          "fill_color": "#3498DB",
+          "mode": "draw",
+          "animation_order": 4
+        },
+        {
+          "id": "element_3",
+          "type": "shape",
+          "shape_type": "circle",
+          "position": {
+            "x": 950,
+            "y": 350
+          },
+          "radius": 80,
+          "fill_color": "#2ECC71",
+          "mode": "draw",
+          "animation_order": 5
+        },
+        {
+          "id": "footer_text",
+          "type": "text",
+          "text": "Multiple layers will be erased sequentially",
+          "position": {
+            "x": 640,
+            "y": 550
+          },
+          "text_config": {
+            "font": "Patrick Hand",
+            "size": 24,
+            "color": "#7F8C8D",
+            "align": "center"
+          },
+          "mode": "draw",
+          "animation_order": 6
+        }
+      ]
+    },
+    {
+      "id": "slide_2_erase_scene_sequential",
+      "description": "Erase entire scene - layers erased one by one in order",
+      "duration": 4,
+      "skip_rate": 5,
+      "mode": "eraser",
+      "scene_eraser": {
+        "enabled": true,
+        "layer_order": "sequential",
+        "style": "progressive",
+        "direction": "normal",
+        "show_eraser_hand": true,
+        "background_color": "#FFFFFF"
+      },
+      "layers": [
+        {
+          "ref": "background_layer"
+        },
+        {
+          "ref": "header_layer"
+        },
+        {
+          "ref": "element_1"
+        },
+        {
+          "ref": "element_2"
+        },
+        {
+          "ref": "element_3"
+        },
+        {
+          "ref": "footer_text"
+        }
+      ]
+    },
+    {
+      "id": "slide_3_new_scene",
+      "description": "Build a new scene after erasing",
+      "duration": 3,
+      "skip_rate": 5,
+      "mode": "draw",
+      "layers": [
+        {
+          "id": "success_message",
+          "type": "text",
+          "text": "Scene Erased Successfully!",
+          "position": {
+            "x": 640,
+            "y": 320
+          },
+          "text_config": {
+            "font": "Patrick Hand",
+            "size": 56,
+            "color": "#27AE60",
+            "align": "center"
+          },
+          "mode": "draw"
+        },
+        {
+          "id": "ready_message",
+          "type": "text",
+          "text": "Ready for new content",
+          "position": {
+            "x": 640,
+            "y": 400
+          },
+          "text_config": {
+            "font": "Patrick Hand",
+            "size": 32,
+            "color": "#95A5A6",
+            "align": "center"
+          },
+          "mode": "draw"
+        }
+      ]
+    }
+  ],
+  "eraser_assets": {
+    "eraser_image": "data/images/eraser.png",
+    "eraser_mask": "data/images/eraser-mask.png"
+  },
+  "demo_info": {
+    "effect_type": "scene_eraser",
+    "available_layer_orders": [
+      "sequential",
+      "reversed",
+      "simultaneous"
+    ],
+    "description": "Scene eraser erases all layers in a scene, either one by one (sequential), in reverse order (reversed), or all at once (simultaneous)"
+  }
+}

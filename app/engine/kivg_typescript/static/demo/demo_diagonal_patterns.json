@@ -1,0 +1,228 @@
+{
+  "title": "Diagonal Pattern Eraser Demo",
+  "description": "Demonstrates different erasing patterns: diagonal, horizontal, and vertical",
+  "scene_width": 1280,
+  "scene_height": 720,
+  "background": "#FFFFFF",
+  "fps": 30,
+  "slides": [
+    {
+      "id": "slide_1_colorful_content",
+      "description": "Create colorful content to demonstrate erasing patterns",
+      "duration": 3,
+      "skip_rate": 5,
+      "mode": "draw",
+      "layers": [
+        {
+          "id": "gradient_bg",
+          "type": "shape",
+          "shape_type": "rectangle",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "width": 1280,
+          "height": 720,
+          "fill_color": "#3498DB",
+          "mode": "draw",
+          "animation_order": 1
+        },
+        {
+          "id": "title",
+          "type": "text",
+          "text": "Pattern Test",
+          "position": {
+            "x": 640,
+            "y": 300
+          },
+          "text_config": {
+            "font": "Patrick Hand",
+            "size": 72,
+            "color": "#FFFFFF",
+            "align": "center"
+          },
+          "mode": "draw",
+          "animation_order": 2
+        },
+        {
+          "id": "subtitle",
+          "type": "text",
+          "text": "Watch the diagonal erasing pattern",
+          "position": {
+            "x": 640,
+            "y": 400
+          },
+          "text_config": {
+            "font": "Patrick Hand",
+            "size": 32,
+            "color": "#ECF0F1",
+            "align": "center"
+          },
+          "mode": "draw",
+          "animation_order": 3
+        }
+      ]
+    },
+    {
+      "id": "slide_2_erase_diagonal",
+      "description": "Erase using diagonal pattern (zigzag from top-left to bottom-right)",
+      "duration": 3,
+      "skip_rate": 3,
+      "mode": "eraser",
+      "eraser_config": {
+        "pattern": "diagonal",
+        "style": "progressive",
+        "background_color": "#FFFFFF",
+        "show_eraser_hand": true,
+        "brush_radius": 30
+      },
+      "slide_eraser": {
+        "enabled": true,
+        "duration": 3.0,
+        "delay_after_animations": 0,
+        "pattern": "diagonal"
+      }
+    },
+    {
+      "id": "slide_3_new_content_horizontal",
+      "description": "New content for horizontal pattern demo",
+      "duration": 2,
+      "skip_rate": 5,
+      "mode": "draw",
+      "layers": [
+        {
+          "id": "horizontal_bg",
+          "type": "shape",
+          "shape_type": "rectangle",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "width": 1280,
+          "height": 720,
+          "fill_color": "#E74C3C",
+          "mode": "draw"
+        },
+        {
+          "id": "horizontal_title",
+          "type": "text",
+          "text": "Horizontal Pattern",
+          "position": {
+            "x": 640,
+            "y": 360
+          },
+          "text_config": {
+            "font": "Patrick Hand",
+            "size": 64,
+            "color": "#FFFFFF",
+            "align": "center"
+          },
+          "mode": "draw"
+        }
+      ]
+    },
+    {
+      "id": "slide_4_erase_horizontal",
+      "description": "Erase using horizontal pattern (row by row)",
+      "duration": 3,
+      "skip_rate": 3,
+      "mode": "eraser",
+      "slide_eraser": {
+        "enabled": true,
+        "duration": 3.0,
+        "pattern": "horizontal",
+        "background_color": "#FFFFFF",
+        "show_eraser": true
+      }
+    },
+    {
+      "id": "slide_5_new_content_vertical",
+      "description": "New content for vertical pattern demo",
+      "duration": 2,
+      "skip_rate": 5,
+      "mode": "draw",
+      "layers": [
+        {
+          "id": "vertical_bg",
+          "type": "shape",
+          "shape_type": "rectangle",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "width": 1280,
+          "height": 720,
+          "fill_color": "#2ECC71",
+          "mode": "draw"
+        },
+        {
+          "id": "vertical_title",
+          "type": "text",
+          "text": "Vertical Pattern",
+          "position": {
+            "x": 640,
+            "y": 360
+          },
+          "text_config": {
+            "font": "Patrick Hand",
+            "size": 64,
+            "color": "#FFFFFF",
+            "align": "center"
+          },
+          "mode": "draw"
+        }
+      ]
+    },
+    {
+      "id": "slide_6_erase_vertical",
+      "description": "Erase using vertical pattern (column by column)",
+      "duration": 3,
+      "skip_rate": 3,
+      "mode": "eraser",
+      "slide_eraser": {
+        "enabled": true,
+        "duration": 3.0,
+        "pattern": "vertical",
+        "background_color": "#FFFFFF",
+        "show_eraser": true
+      }
+    },
+    {
+      "id": "slide_7_complete",
+      "description": "Demo complete",
+      "duration": 2,
+      "mode": "draw",
+      "layers": [
+        {
+          "id": "complete_text",
+          "type": "text",
+          "text": "All Patterns Demonstrated!",
+          "position": {
+            "x": 640,
+            "y": 360
+          },
+          "text_config": {
+            "font": "Patrick Hand",
+            "size": 48,
+            "color": "#9B59B6",
+            "align": "center"
+          },
+          "mode": "draw"
+        }
+      ]
+    }
+  ],
+  "demo_info": {
+    "effect_type": "diagonal_pattern_eraser",
+    "available_patterns": {
+      "diagonal": "Zigzag pattern from top-left to bottom-right, simulating natural hand wiping motion",
+      "horizontal": "Row by row erasing from top to bottom",
+      "vertical": "Column by column erasing from left to right"
+    },
+    "use_cases": [
+      "Scene transitions in whiteboard animations",
+      "Revealing new content after erasing old content",
+      "Creating professional slide transitions"
+    ]
+  }
+}

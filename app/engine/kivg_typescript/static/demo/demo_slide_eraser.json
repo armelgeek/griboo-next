@@ -1,0 +1,344 @@
+{
+  "title": "Slide Eraser Demo",
+  "description": "Demonstrates end-of-slide eraser transitions with delay",
+  "scene_width": 1280,
+  "scene_height": 720,
+  "background": "#FFFFFF",
+  "fps": 30,
+  "slides": [
+    {
+      "id": "slide_1_presentation",
+      "description": "First slide with presentation content",
+      "duration": 4,
+      "skip_rate": 5,
+      "mode": "draw",
+      "slide_eraser": {
+        "enabled": true,
+        "duration": 4.0,
+        "delay_after_animations": 2.0,
+        "pattern": "diagonal",
+        "background_color": "#FFFFFF",
+        "show_eraser": true
+      },
+      "layers": [
+        {
+          "id": "header_bar",
+          "type": "shape",
+          "shape_type": "rectangle",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "width": 1280,
+          "height": 80,
+          "fill_color": "#2C3E50",
+          "mode": "draw",
+          "animation_order": 1
+        },
+        {
+          "id": "slide_title",
+          "type": "text",
+          "text": "Slide Eraser Demo",
+          "position": {
+            "x": 640,
+            "y": 50
+          },
+          "text_config": {
+            "font": "Patrick Hand",
+            "size": 36,
+            "color": "#FFFFFF",
+            "align": "center"
+          },
+          "mode": "draw",
+          "animation_order": 2
+        },
+        {
+          "id": "bullet_1",
+          "type": "text",
+          "text": "• First important point",
+          "position": {
+            "x": 100,
+            "y": 180
+          },
+          "text_config": {
+            "font": "Patrick Hand",
+            "size": 32,
+            "color": "#2C3E50",
+            "align": "left"
+          },
+          "mode": "draw",
+          "animation_order": 3
+        },
+        {
+          "id": "bullet_2",
+          "type": "text",
+          "text": "• Second key feature",
+          "position": {
+            "x": 100,
+            "y": 250
+          },
+          "text_config": {
+            "font": "Patrick Hand",
+            "size": 32,
+            "color": "#2C3E50",
+            "align": "left"
+          },
+          "mode": "draw",
+          "animation_order": 4
+        },
+        {
+          "id": "bullet_3",
+          "type": "text",
+          "text": "• Third conclusion",
+          "position": {
+            "x": 100,
+            "y": 320
+          },
+          "text_config": {
+            "font": "Patrick Hand",
+            "size": 32,
+            "color": "#2C3E50",
+            "align": "left"
+          },
+          "mode": "draw",
+          "animation_order": 5
+        },
+        {
+          "id": "diagram_box",
+          "type": "shape",
+          "shape_type": "rectangle",
+          "position": {
+            "x": 800,
+            "y": 150
+          },
+          "width": 350,
+          "height": 250,
+          "fill_color": "#ECF0F1",
+          "stroke_color": "#BDC3C7",
+          "stroke_width": 2,
+          "mode": "draw",
+          "animation_order": 6
+        },
+        {
+          "id": "diagram_label",
+          "type": "text",
+          "text": "Diagram",
+          "position": {
+            "x": 975,
+            "y": 280
+          },
+          "text_config": {
+            "font": "Patrick Hand",
+            "size": 28,
+            "color": "#7F8C8D",
+            "align": "center"
+          },
+          "mode": "draw",
+          "animation_order": 7
+        },
+        {
+          "id": "footer_bar",
+          "type": "shape",
+          "shape_type": "rectangle",
+          "position": {
+            "x": 0,
+            "y": 680
+          },
+          "width": 1280,
+          "height": 40,
+          "fill_color": "#2C3E50",
+          "mode": "draw",
+          "animation_order": 8
+        },
+        {
+          "id": "page_number",
+          "type": "text",
+          "text": "Page 1 of 3",
+          "position": {
+            "x": 1200,
+            "y": 702
+          },
+          "text_config": {
+            "font": "Patrick Hand",
+            "size": 18,
+            "color": "#FFFFFF",
+            "align": "right"
+          },
+          "mode": "draw",
+          "animation_order": 9
+        }
+      ]
+    },
+    {
+      "id": "slide_2_next_topic",
+      "description": "Second slide - appears after erasing first",
+      "duration": 4,
+      "skip_rate": 5,
+      "mode": "draw",
+      "slide_eraser": {
+        "enabled": true,
+        "duration": 1.5,
+        "delay_after_animations": 0.5,
+        "pattern": "horizontal",
+        "background_color": "#FFFFFF"
+      },
+      "layers": [
+        {
+          "id": "header_bar_2",
+          "type": "shape",
+          "shape_type": "rectangle",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "width": 1280,
+          "height": 80,
+          "fill_color": "#27AE60",
+          "mode": "draw"
+        },
+        {
+          "id": "slide_title_2",
+          "type": "text",
+          "text": "New Topic",
+          "position": {
+            "x": 640,
+            "y": 50
+          },
+          "text_config": {
+            "font": "Patrick Hand",
+            "size": 36,
+            "color": "#FFFFFF",
+            "align": "center"
+          },
+          "mode": "draw"
+        },
+        {
+          "id": "content_2",
+          "type": "text",
+          "text": "This slide appears after the previous one was erased",
+          "position": {
+            "x": 640,
+            "y": 300
+          },
+          "text_config": {
+            "font": "Patrick Hand",
+            "size": 28,
+            "color": "#2C3E50",
+            "align": "center"
+          },
+          "mode": "draw"
+        },
+        {
+          "id": "footer_bar_2",
+          "type": "shape",
+          "shape_type": "rectangle",
+          "position": {
+            "x": 0,
+            "y": 680
+          },
+          "width": 1280,
+          "height": 40,
+          "fill_color": "#27AE60",
+          "mode": "draw"
+        },
+        {
+          "id": "page_number_2",
+          "type": "text",
+          "text": "Page 2 of 3",
+          "position": {
+            "x": 1200,
+            "y": 702
+          },
+          "text_config": {
+            "font": "Patrick Hand",
+            "size": 18,
+            "color": "#FFFFFF",
+            "align": "right"
+          },
+          "mode": "draw"
+        }
+      ]
+    },
+    {
+      "id": "slide_3_conclusion",
+      "description": "Final slide",
+      "duration": 3,
+      "skip_rate": 5,
+      "mode": "draw",
+      "layers": [
+        {
+          "id": "conclusion_bg",
+          "type": "shape",
+          "shape_type": "rectangle",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "width": 1280,
+          "height": 720,
+          "fill_color": "#9B59B6",
+          "mode": "draw"
+        },
+        {
+          "id": "conclusion_text",
+          "type": "text",
+          "text": "Slide Transition Complete!",
+          "position": {
+            "x": 640,
+            "y": 320
+          },
+          "text_config": {
+            "font": "Patrick Hand",
+            "size": 56,
+            "color": "#FFFFFF",
+            "align": "center"
+          },
+          "mode": "draw"
+        },
+        {
+          "id": "conclusion_subtext",
+          "type": "text",
+          "text": "Eraser transitions create smooth whiteboard-style effects",
+          "position": {
+            "x": 640,
+            "y": 400
+          },
+          "text_config": {
+            "font": "Patrick Hand",
+            "size": 28,
+            "color": "#ECF0F1",
+            "align": "center"
+          },
+          "mode": "draw"
+        },
+        {
+          "id": "page_number_3",
+          "type": "text",
+          "text": "Page 3 of 3",
+          "position": {
+            "x": 1200,
+            "y": 702
+          },
+          "text_config": {
+            "font": "Patrick Hand",
+            "size": 18,
+            "color": "#FFFFFF",
+            "align": "right"
+          },
+          "mode": "draw"
+        }
+      ]
+    }
+  ],
+  "demo_info": {
+    "effect_type": "slide_eraser",
+    "description": "Slide eraser provides smooth transitions between slides by erasing the current content before showing new content",
+    "configuration_options": {
+      "duration": "Time in seconds for the erasing animation",
+      "delay_after_animations": "Time to wait after all layer animations complete before starting eraser",
+      "pattern": "Erasing pattern (diagonal, horizontal, vertical)",
+      "background_color": "Color revealed when erasing",
+      "show_eraser": "Whether to show eraser hand during animation"
+    }
+  }
+}

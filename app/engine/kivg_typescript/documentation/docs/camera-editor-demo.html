@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Éditeur de Caméras - KIVG</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: #f0f4f8;
+            overflow: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 320px;
+            background: white;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .sidebar-header h1 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .sidebar-header p {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .toolbar-left,
+        .toolbar-right {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn:hover {
+            background: #f7fafc;
+            border-color: #667eea;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .canvas-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #scene-canvas {
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            position: relative;
+        }
+
+        .zoom-display {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            color: #4a5568;
+        }
+
+        .help-text {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            color: #4a5568;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .help-text kbd {
+            background: #f7fafc;
+            border: 1px solid #cbd5e0;
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-family: monospace;
+            font-size: 12px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-panel {
+            padding: 20px;
+            background: #f7fafc;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 13px;
+            color: #4a5568;
+        }
+
+        .info-label {
+            font-weight: 600;
+        }
+
+        .info-value {
+            color: #667eea;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar with Camera Controls -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>📷 Éditeur de Caméras</h1>
+                <p>Gérez plusieurs caméras pour des scènes immenses</p>
+            </div>
+            <div class="sidebar-content" id="camera-controls"></div>
+            <div class="info-panel">
+                <div class="info-item">
+                    <span class="info-label">Scène:</span>
+                    <span class="info-value" id="scene-size">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Caméras:</span>
+                    <span class="info-value" id="camera-count">0</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Sélection:</span>
+                    <span class="info-value" id="selection-info">Aucune</span>
+                </div>
+            </div>
+
+            <div class="sidebar-header" style="background: #2d3748; margin-top: 1px;">
+                <h1>🛠️ Propriétés</h1>
+            </div>
+            <div class="info-panel" id="properties-panel" style="display: none;">
+                <div id="alignment-controls" style="display: none; margin-bottom: 10px;">
+                    <p style="font-size: 12px; font-weight: 600; margin-bottom: 4px; color: #4a5568;">Alignement</p>
+                    <div style="display: flex; gap: 4px; margin-bottom: 4px;">
+                        <button class="btn" id="btn-align-left" title="Aligner à gauche"
+                            style="padding: 4px 8px; flex: 1; justify-content: center;">├</button>
+                        <button class="btn" id="btn-align-center" title="Centrer horizontalement"
+                            style="padding: 4px 8px; flex: 1; justify-content: center;">┼</button>
+                        <button class="btn" id="btn-align-right" title="Aligner à droite"
+                            style="padding: 4px 8px; flex: 1; justify-content: center;">┤</button>
+                    </div>
+                    <div style="display: flex; gap: 4px;">
+                        <button class="btn" id="btn-align-top" title="Aligner en haut"
+                            style="padding: 4px 8px; flex: 1; justify-content: center;">┬</button>
+                        <button class="btn" id="btn-align-middle" title="Centrer verticalement"
+                            style="padding: 4px 8px; flex: 1; justify-content: center;">┼</button>
+                        <button class="btn" id="btn-align-bottom" title="Aligner en bas"
+                            style="padding: 4px 8px; flex: 1; justify-content: center;">┴</button>
+                    </div>
+                    <div style="height: 1px; background: #e2e8f0; margin: 10px 0;"></div>
+                </div>
+                <div id="shape-properties" style="display: none;">
+                    <button class="btn btn-primary" id="btn-update-color" style="width: 100%; margin-bottom: 10px;">
+                        🎨 Changer la Couleur
+                    </button>
+                </div>
+                <div id="text-properties" style="display: none;">
+                    <button class="btn btn-primary" id="btn-update-text" style="width: 100%; margin-bottom: 10px;">
+                        ✏️ Changer le Texte
+                    </button>
+                </div>
+                <button class="btn" id="btn-double-scale" style="width: 100%;">
+                    🔍 Doubler la Taille
+                </button>
+                <button class="btn" id="btn-remove-layer"
+                    style="width: 100%; margin-top: 10px; color: #e53e3e; border-color: #feb2b2;">
+                    🗑️ Supprimer le Calque
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Canvas Area -->
+        <div class="main-content">
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <button class="btn btn-primary" id="btn-export">
+                        💾 Exporter la Configuration
+                    </button>
+                    <button class="btn" id="btn-add-shape">
+                        🟦 Forme
+                    </button>
+                    <button class="btn" id="btn-add-image">
+                        🖼️ Image
+                    </button>
+                    <button class="btn" id="btn-add-svg">
+                        🎨 SVG
+                    </button>
+                    <button class="btn" id="btn-add-text">
+                        🔤 Texte
+                    </button>
+                    <div style="width: 1px; height: 24px; background: #cbd5e0; margin: 0 8px;"></div>
+                    <button class="btn" id="btn-undo" title="Annuler (Ctrl+Z)">↩️</button>
+                    <button class="btn" id="btn-redo" title="Rétablir (Ctrl+Y)">↪️</button>
+                    <div style="width: 1px; height: 24px; background: #cbd5e0; margin: 0 8px;"></div>
+                    <button class="btn" id="btn-copy" title="Copier (Ctrl+C)">📋</button>
+                    <button class="btn" id="btn-paste" title="Coller (Ctrl+V)">📌</button>
+                    <button class="btn" id="btn-cut" title="Couper (Ctrl+X)">✂️</button>
+                    <div style="width: 1px; height: 24px; background: #cbd5e0; margin: 0 8px;"></div>
+                    <button class="btn" id="btn-duplicate" title="Dupliquer">📄</button>
+                    <button class="btn" id="btn-lock" title="Verrouiller/Déverrouiller">🔒</button>
+                    <button class="btn" id="btn-flip-h" title="Miroir Horizontal">↔️</button>
+                    <button class="btn" id="btn-flip-v" title="Miroir Vertical">↕️</button>
+                    <button class="btn" id="btn-front" title="Mettre au premier plan">⬆️</button>
+                    <button class="btn" id="btn-back" title="Mettre en arrière plan">⬇️</button>
+                </div>
+                <div class="toolbar-right">
+                    <button class="btn" id="btn-zoom-out">🔍-</button>
+                    <button class="btn" id="btn-zoom-reset">100%</button>
+                    <button class="btn" id="btn-zoom-in">🔍+</button>
+                    <button class="btn" id="btn-fit">📐 Ajuster</button>
+                    <button class="btn" id="btn-reset-view">🎯 Réinitialiser</button>
+                </div>
+            </div>
+
+            <div class="canvas-container">
+                <div id="quick-nav-container"></div>
+                <div class="help-text">
+                    💡 <strong>Astuces:</strong>
+                    <br>• <strong>Annuler/Rétablir:</strong> <kbd>Ctrl+Z</kbd> / <kbd>Ctrl+Y</kbd>
+                    <br>• <strong>Presse-papiers:</strong> <kbd>Ctrl+C</kbd>, <kbd>Ctrl+V</kbd>, <kbd>Ctrl+X</kbd>
+                    <br>• Maintenez <kbd>Espace</kbd> ou <kbd>Bouton du milieu</kbd> + glisser pour déplacer la scène
+                    <br>• <strong>Glissez</strong> sur la scène pour sélectionner plusieurs éléments
+                    <br>• <kbd>Ctrl+Click</kbd> pour ajouter/enlever des éléments de la sélection
+                    <br>• <strong>Double-cliquez</strong> pour ajouter du texte
+                    <br>• Utilisez la molette de la souris pour zoomer
+                </div>
+                <div id="scene-canvas"></div>
+                <div class="zoom-display">
+                    <span id="zoom-value">100%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { SceneCanvas, CameraControls, QuickCameraNav } from './src/editor/canvas/index.ts';
+
+        // Initialize scene with large virtual size
+        const sceneConfig = {
+            id: 'demo-scene',
+            name: 'Demo Scene',
+            width: 3000,  // Large immense scene
+            height: 5000,
+            background: {
+                color: '#ffffff',
+                grid: {
+                    type: 'dots',
+                    size: 50,
+                    color: '#cbd5e0',
+                    opacity: 0.3
+                }
+            },
+            cameras: [
+                {
+                    id: 'default-camera',
+                    name: 'Caméra Principale',
+                    position: { x: 1500, y: 2500 },
+                    width: 800,
+                    height: 450,
+                    zoom: 1,
+                    locked: false,
+                    isDefault: true
+                },
+                {
+                    id: 'camera-2',
+                    name: 'Caméra Secondaire',
+                    position: { x: 750, y: 1250 },
+                    width: 640,
+                    height: 360,
+                    zoom: 1.5,
+                    locked: false,
+                    isDefault: false
+                }
+            ],
+            layers: [
+                {
+                    id: 'shape-1',
+                    type: 'shape',
+                    shape: 'rectangle',
+                    x: 1000,
+                    y: 1000,
+                    width: 300,
+                    height: 200,
+                    fillColor: '#f56565',
+                    strokeColor: '#c53030',
+                    strokeWidth: 4
+                },
+                {
+                    id: 'text-1',
+                    type: 'text',
+                    x: 2000,
+                    y: 3000,
+                    text_config: {
+                        text: 'Bienvenue dans la Scène!',
+                        size: 48,
+                        color: '#2d3748',
+                        align: 'center'
+                    }
+                }
+            ]
+        };
+
+        // Create scene canvas
+        const canvasContainer = document.getElementById('scene-canvas');
+        const sceneCanvas = new SceneCanvas('scene-canvas', sceneConfig, {
+            onLayerSelect: (layerId) => {
+                updatePropertiesPanel(layerId);
+                const info = document.getElementById('selection-info');
+                info.textContent = layerId ? layerId : 'Aucune';
+            },
+            onLayerAdd: (layer) => {
+                console.log('➕ Layer Added:', layer);
+                // In a real app, you would add this to your store/state
+            },
+            onLayerRemove: (layerId) => {
+                console.log('🗑️ Layer Removed:', layerId);
+                updatePropertiesPanel(null);
+            },
+            onLayerChange: (layer) => {
+                console.log('🔄 Layer Changed:', layer);
+                // In a real app, you would update your store/state
+            },
+            onCameraSelect: (camera) => {
+                cameraControls.setSelectedCamera(camera ? camera.id : null);
+                updateSelectionInfo(camera ? camera.id : null);
+                quickNav.setSelectedCamera(camera ? camera.id : null);
+                if (camera) {
+                    sceneCanvas.focusToCamera(camera.id);
+                }
+            }
+        });
+
+        // Create camera controls
+        const controlsContainer = document.getElementById('camera-controls');
+        const cameraControls = new CameraControls({
+            container: controlsContainer,
+            cameras: sceneCanvas.getAllCameras(),
+            selectedCameraId: null,
+            virtualSize: { width: sceneConfig.width, height: sceneConfig.height }
+        });
+
+        // Wire up camera controls callbacks
+        cameraControls.setCallbacks({
+            onCameraSelect: (cameraId) => {
+                sceneCanvas.selectCamera(cameraId);
+                updateSelectionInfo(cameraId);
+                quickNav.setSelectedCamera(cameraId);
+            },
+            onCameraAdd: () => {
+                // Generate unique ID using crypto.randomUUID() if available, fallback to timestamp + random
+                const generateId = () => {
+                    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+                        return `camera-${crypto.randomUUID()}`;
+                    }
+                    return `camera-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+                };
+
+                const newCamera = {
+                    id: generateId(),
+                    name: `Caméra ${sceneCanvas.getAllCameras().length + 1}`,
+                    position: { x: 0, y: 0 }, // Will use current viewport position
+                    width: 800,
+                    height: 450,
+                    zoom: 1,
+                    locked: false,
+                    isDefault: false
+                };
+                sceneCanvas.addCamera(newCamera);
+                cameraControls.updateCameras(sceneCanvas.getAllCameras());
+                quickNav.updateCameras(sceneCanvas.getAllCameras());
+                updateCameraCount();
+            },
+            onCameraRemove: (cameraId) => {
+                sceneCanvas.removeCamera(cameraId);
+                cameraControls.updateCameras(sceneCanvas.getAllCameras());
+                quickNav.updateCameras(sceneCanvas.getAllCameras());
+                cameraControls.setSelectedCamera(null);
+                quickNav.setSelectedCamera(null);
+                updateCameraCount();
+                updateSelectionInfo(null);
+            },
+            onCameraDuplicate: (cameraId) => {
+                const duplicated = sceneCanvas.duplicateCamera(cameraId);
+                if (duplicated) {
+                    cameraControls.updateCameras(sceneCanvas.getAllCameras());
+                    quickNav.updateCameras(sceneCanvas.getAllCameras());
+                    updateCameraCount();
+                }
+            },
+            onCameraUpdate: (cameraId, updates) => {
+                sceneCanvas.updateCamera(cameraId, updates);
+            },
+            onVirtualSizeUpdate: (width, height) => {
+                sceneCanvas.updateScene({ width, height });
+                updateSceneSize(width, height);
+            }
+        });
+
+        // Initialize Quick Camera Navigation
+        const quickNav = new QuickCameraNav({
+            container: document.getElementById('quick-nav-container'),
+            cameras: sceneCanvas.getAllCameras(),
+            selectedCameraId: 'default-camera',
+            position: 'top-right'
+        });
+
+        quickNav.setCallbacks({
+            onNavigateToCamera: (cameraId) => {
+                sceneCanvas.focusToCamera(cameraId);
+                sceneCanvas.selectCamera(cameraId); // Also select it in editor
+                cameraControls.setSelectedCamera(cameraId);
+            }
+        });
+
+        // Wire up scene canvas callbacks
+        sceneCanvas.setCallbacks({
+            onCameraSelect: (camera) => {
+                cameraControls.setSelectedCamera(camera ? camera.id : null);
+                updateSelectionInfo(camera ? camera.id : null);
+                quickNav.setSelectedCamera(camera ? camera.id : null);
+                if (camera) {
+                    sceneCanvas.focusToCamera(camera.id);
+                }
+            },
+            onCameraChange: (camera) => {
+                cameraControls.updateCameras(sceneCanvas.getAllCameras());
+                quickNav.updateCameras(sceneCanvas.getAllCameras());
+            },
+            onZoomChange: (zoom) => {
+                document.getElementById('zoom-value').textContent = `${Math.round(zoom * 100)}%`;
+            },
+            onLayerSelect: (layerId) => {
+                updateSelectionInfo(layerId);
+                updatePropertiesPanel(layerId);
+            }
+        });
+
+        function updatePropertiesPanel(layerId) {
+            const panel = document.getElementById('properties-panel');
+            const shapeProps = document.getElementById('shape-properties');
+            const textProps = document.getElementById('text-properties');
+            const alignmentControls = document.getElementById('alignment-controls');
+
+            const selectedIds = sceneCanvas.getSelectedLayerIds();
+
+            if (selectedIds.length === 0) {
+                panel.style.display = 'none';
+                return;
+            }
+
+            panel.style.display = 'block';
+
+            // Show alignment controls if multiple layers are selected
+            alignmentControls.style.display = selectedIds.length > 1 ? 'block' : 'none';
+
+            // For single selection, show specific controls
+            if (selectedIds.length === 1) {
+                const id = selectedIds[0];
+                shapeProps.style.display = id.startsWith('shape') ? 'block' : 'none';
+                textProps.style.display = id.startsWith('text') ? 'block' : 'none';
+            } else {
+                shapeProps.style.display = 'none';
+                textProps.style.display = 'none';
+            }
+        }
+
+        document.getElementById('btn-duplicate').addEventListener('click', () => {
+             sceneCanvas.duplicateSelectedLayers();
+         });
+ 
+         document.getElementById('btn-lock').addEventListener('click', () => {
+             sceneCanvas.toggleLock();
+         });
+ 
+         document.getElementById('btn-flip-h').addEventListener('click', () => {
+             sceneCanvas.flipHorizontal();
+         });
+ 
+         document.getElementById('btn-flip-v').addEventListener('click', () => {
+             sceneCanvas.flipVertical();
+         });
+ 
+         document.getElementById('btn-front').addEventListener('click', () => {
+             sceneCanvas.bringToFront();
+         });
+ 
+         document.getElementById('btn-back').addEventListener('click', () => {
+             sceneCanvas.sendToBack();
+         });
+
+        // Alignment logic
+        ['left', 'center', 'right', 'top', 'middle', 'bottom'].forEach(align => {
+            const btn = document.getElementById(`btn-align-${align}`);
+            if (btn) {
+                btn.addEventListener('click', () => sceneCanvas.alignLayers(align));
+            }
+        });
+
+        document.getElementById('btn-update-color').addEventListener('click', () => {
+            const layerId = sceneCanvas.getSelectedLayerId();
+            if (layerId) {
+                sceneCanvas.updateLayer(layerId, {
+                    fillColor: `hsl(${Math.random() * 360}, 75%, 55%)`
+                });
+            }
+        });
+
+        document.getElementById('btn-update-text').addEventListener('click', () => {
+            const layerId = sceneCanvas.getSelectedLayerId();
+            if (layerId) {
+                sceneCanvas.updateLayer(layerId, {
+                    text_config: {
+                        text: 'Texte Modifié ' + Math.floor(Math.random() * 100)
+                    }
+                });
+            }
+        });
+
+        document.getElementById('btn-double-scale').addEventListener('click', () => {
+            const layerId = sceneCanvas.getSelectedLayerId();
+            if (layerId) {
+                // In a real app we'd get current config, here we just demonstrate update
+                sceneCanvas.updateLayer(layerId, {
+                    scale: 2.0
+                });
+            }
+        });
+
+        document.getElementById('btn-remove-layer').addEventListener('click', () => {
+            const layerId = sceneCanvas.getSelectedLayerId();
+            if (layerId) {
+                sceneCanvas.removeLayer(layerId);
+                updatePropertiesPanel(null);
+                updateSelectionInfo(null);
+            }
+        });
+
+        // Toolbar buttons
+        document.getElementById('btn-zoom-in').addEventListener('click', () => {
+            sceneCanvas.zoomIn();
+        });
+
+        document.getElementById('btn-zoom-out').addEventListener('click', () => {
+            sceneCanvas.zoomOut();
+        });
+
+        document.getElementById('btn-zoom-reset').addEventListener('click', () => {
+            sceneCanvas.focusDefaultCamera();
+        });
+
+        document.getElementById('btn-fit').addEventListener('click', () => {
+            sceneCanvas.fitToViewport();
+        });
+
+        document.getElementById('btn-reset-view').addEventListener('click', () => {
+            sceneCanvas.focusDefaultCamera();
+        });
+
+        document.getElementById('btn-export').addEventListener('click', () => {
+            const config = {
+                scene: sceneCanvas.getConfig(),
+                cameras: sceneCanvas.getAllCameras()
+            };
+            const json = JSON.stringify(config, null, 2);
+
+            // Download as JSON
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'camera-configuration.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            alert('Configuration exportée avec succès!');
+        });
+
+        const generateId = (prefix) => {
+            if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+                return `${prefix}-${crypto.randomUUID()}`;
+            }
+            return `${prefix}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        };
+
+        const addShapeBtn = document.getElementById('btn-add-shape');
+        if (addShapeBtn) {
+            addShapeBtn.addEventListener('click', () => {
+                sceneCanvas.addShapeLayer({
+                    id: generateId('shape'),
+                    shape: 'rectangle',
+                    width: 200,
+                    height: 150,
+                    fillColor: `hsl(${Math.random() * 360}, 70%, 60%)`,
+                    strokeColor: '#2d3748',
+                    strokeWidth: 3
+                });
+            });
+        }
+
+        const addImageBtn = document.getElementById('btn-add-image');
+        if (addImageBtn) {
+            addImageBtn.addEventListener('click', async () => {
+                // Using a placeholder image for demo
+                await sceneCanvas.addImageLayer({
+                    id: generateId('image'),
+                    image_path: 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=400&h=300&fit=crop',
+                    width: 400,
+                    height: 300
+                });
+            });
+        }
+
+        const addSvgBtn = document.getElementById('btn-add-svg');
+        if (addSvgBtn) {
+            addSvgBtn.addEventListener('click', async () => {
+                // Simple heart SVG in Data URI format to avoid CORS issues
+                const heartSvg = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjZTUzZTNlIj48cGF0aCBkPSJNMTIgMjEuMzVsLTEuNDUtMS4zMkM1LjQgMTUuMzYgMiAxMi4yNyAyIDguNUNhNS41IDUuNSAwIDAgMSA1LjUtNS41Yy4zIDAgNi4xIDIuMDIgOC41IDUuMTJDMTUuMTQgMy41MiAxOS4yMyAzIDIyIDIyYTUuNSA1LjUgMCAwIDEgNSu1IDUuNWMwIDMuNzctMy40IDYuODYtOC41NSAxMS41NEwxMiAyMS4zNXoiLz48L3N2Zz4=';
+                await sceneCanvas.addSvgLayer({
+                    id: generateId('svg'),
+                    svg_path: heartSvg,
+                    scale: 2.0
+                });
+            });
+        }
+
+        const addTextBtn = document.getElementById('btn-add-text');
+        if (addTextBtn) {
+            addTextBtn.addEventListener('click', () => {
+                sceneCanvas.addTextLayer({
+                    id: generateId('text'),
+                    text_config: {
+                        text: 'Nouveau Texte',
+                        size: 60,
+                        color: '#4a5568',
+                        align: 'center'
+                    }
+                });
+            });
+        }
+
+        // History & Clipboard Buttons
+        const btnUndo = document.getElementById('btn-undo');
+        if (btnUndo) btnUndo.addEventListener('click', () => sceneCanvas.undo());
+
+        const btnRedo = document.getElementById('btn-redo');
+        if (btnRedo) btnRedo.addEventListener('click', () => sceneCanvas.redo());
+
+        const btnCopy = document.getElementById('btn-copy');
+        if (btnCopy) btnCopy.addEventListener('click', () => sceneCanvas.copy());
+
+        const btnPaste = document.getElementById('btn-paste');
+        if (btnPaste) btnPaste.addEventListener('click', () => sceneCanvas.paste());
+
+        const btnCut = document.getElementById('btn-cut');
+        if (btnCut) btnCut.addEventListener('click', () => sceneCanvas.cut());
+
+        // Update info display
+        function updateSceneSize(width, height) {
+            document.getElementById('scene-size').textContent = `${width}×${height}px`;
+        }
+
+        function updateCameraCount() {
+            const count = sceneCanvas.getAllCameras().length;
+            document.getElementById('camera-count').textContent = count;
+        }
+
+        function updateSelectionInfo(cameraId) {
+            const info = cameraId
+                ? sceneCanvas.getCameraConfig(cameraId)?.name || cameraId
+                : 'Aucune';
+            document.getElementById('selection-info').textContent = info;
+        }
+
+        // Initial updates
+        updateSceneSize(sceneConfig.width, sceneConfig.height);
+        updateCameraCount();
+        updateSelectionInfo(null);
+
+        // Focus default camera on load
+        setTimeout(() => {
+            sceneCanvas.focusDefaultCamera();
+        }, 100);
+    </script>
+</body>
+
+</html>

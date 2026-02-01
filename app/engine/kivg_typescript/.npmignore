@@ -1,0 +1,49 @@
+# Development files
+.vscode/
+.parcel-cache/
+.cache/
+.github/
+.git/
+.gitignore
+.env
+.DS_Store
+
+# Build artifacts (don't include in npm, only dist)
+node_modules/
+parcel-dist/
+docs/
+docs-dist_temp/
+
+# Examples and documentation that don't need to be in npm package
+examples/
+documentation/
+PUBLISHING.md
+
+# Test files and output
+test-images/
+output/
+output_*.png
+COMPARISON.png
+test-*.js
+test-*.ts
+inspect-*.js
+create-*.js
+test_output/
+test_output_transparency/
+temp_frames/
+**/temp_frames/
+*_backup.png
+build_errors.txt
+
+# Demo files
+index.html
+public/
+
+# Configuration files for development only
+.parcelrc
+tsconfig.examples.json
+pnpm-lock.yaml
+yarn.lock
+
+# Keep only necessary lock file
+# package-lock.json is kept for reproducible builds

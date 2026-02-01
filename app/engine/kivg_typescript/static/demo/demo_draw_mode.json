@@ -1,0 +1,164 @@
+{
+  "description": "Demo configuration to test the draw mode animation pattern",
+  "scene_width": 800,
+  "scene_height": 600,
+  "background": "#FFFFFF",
+  "slides": [
+    {
+      "name": "Demo Draw Mode - Diagonal Pattern",
+      "mode": "coloriage",
+      "coloriage_pattern": "diagonal",
+      "duration": 2,
+      "layers": [
+        {
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 100,
+            "y": 100
+          },
+          "width": 200,
+          "height": 150,
+          "fill_color": "#FF6B6B",
+          "stroke_color": "#C92A2A",
+          "stroke_width": 3
+        },
+        {
+          "type": "text",
+          "text_config": {
+            "text": "Diagonal Pattern",
+            "font": "Patrick Hand",
+            "size": 28,
+            "color": "#333333",
+            "position": {
+              "x": 400,
+              "y": 50
+            },
+            "align": "center"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Demo Draw Mode - Horizontal Pattern",
+      "mode": "coloriage",
+      "coloriage_pattern": "horizontal",
+      "duration": 2,
+      "layers": [
+        {
+          "type": "shape",
+          "shape": "circle",
+          "position": {
+            "x": 400,
+            "y": 300
+          },
+          "size": 100,
+          "fill_color": "#4DABF7",
+          "stroke_color": "#1864AB",
+          "stroke_width": 3
+        },
+        {
+          "type": "text",
+          "text_config": {
+            "text": "Horizontal Pattern",
+            "font": "Patrick Hand",
+            "size": 28,
+            "color": "#333333",
+            "position": {
+              "x": 400,
+              "y": 50
+            },
+            "align": "center"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Demo Draw Mode - Vertical Pattern",
+      "mode": "coloriage",
+      "coloriage_pattern": "vertical",
+      "duration": 2,
+      "layers": [
+        {
+          "type": "shape",
+          "shape": "triangle",
+          "position": {
+            "x": 400,
+            "y": 300
+          },
+          "size": 100,
+          "fill_color": "#69DB7C",
+          "stroke_color": "#2B8A3E",
+          "stroke_width": 3
+        },
+        {
+          "type": "text",
+          "text_config": {
+            "text": "Vertical Pattern",
+            "font": "Patrick Hand",
+            "size": 28,
+            "color": "#333333",
+            "position": {
+              "x": 400,
+              "y": 50
+            },
+            "align": "center"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Demo Draw Mode - Draw Pattern (Grid-based)",
+      "mode": "coloriage",
+      "coloriage_pattern": "draw",
+      "split_len": 20,
+      "duration": 3,
+      "layers": [
+        {
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 200,
+            "y": 150
+          },
+          "width": 400,
+          "height": 300,
+          "fill_color": "#FAB005",
+          "stroke_color": "#E67700",
+          "stroke_width": 4
+        },
+        {
+          "type": "text",
+          "text_config": {
+            "text": "Draw Pattern\n(Grid-based like sketch.py)",
+            "font": "Patrick Hand",
+            "size": 24,
+            "color": "#333333",
+            "position": {
+              "x": 400,
+              "y": 50
+            },
+            "align": "center"
+          }
+        }
+      ]
+    }
+  ],
+  "transitions": [
+    {
+      "after_slide": 0,
+      "type": "fade",
+      "duration": 0.5
+    },
+    {
+      "after_slide": 1,
+      "type": "fade",
+      "duration": 0.5
+    },
+    {
+      "after_slide": 2,
+      "type": "fade",
+      "duration": 0.5
+    }
+  ]
+}

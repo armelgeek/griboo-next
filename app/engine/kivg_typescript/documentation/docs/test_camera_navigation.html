@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Navigation Rapide des Caméras</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: #f0f4f8;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #2d3748;
+            margin-bottom: 20px;
+        }
+        .info {
+            background: #e6fffa;
+            border-left: 4px solid #38b2ac;
+            padding: 16px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .info h3 {
+            color: #234e52;
+            margin-bottom: 12px;
+        }
+        .info ul {
+            color: #2c7a7b;
+            line-height: 1.8;
+            margin-left: 20px;
+        }
+        .info code {
+            background: #bee3f8;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+            color: #2c5282;
+        }
+        .editor-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+            height: 600px;
+            position: relative;
+        }
+        #canvas-container {
+            width: 100%;
+            height: 100%;
+            background: #fafafa;
+            position: relative;
+        }
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .control-group {
+            margin-bottom: 15px;
+        }
+        .control-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2d3748;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 6px;
+            background: #667eea;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        button:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+        }
+        .status {
+            background: #f7fafc;
+            padding: 12px;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-family: monospace;
+            font-size: 13px;
+            color: #4a5568;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎬 Test - Navigation Rapide des Caméras</h1>
+        
+        <div class="info">
+            <h3>📖 Comment utiliser la navigation rapide</h3>
+            <ul>
+                <li><code>Ctrl+1</code> à <code>Ctrl+9</code> - Aller directement à la caméra 1-9</li>
+                <li><code>Ctrl+→</code> ou <code>Ctrl+↓</code> - Caméra suivante</li>
+                <li><code>Ctrl+←</code> ou <code>Ctrl+↑</code> - Caméra précédente</li>
+                <li><code>Ctrl+Tab</code> - Caméra suivante (avec <code>Shift</code> pour précédente)</li>
+                <li><strong>Cliquez sur le widget</strong> en haut à droite pour voir toutes les caméras</li>
+            </ul>
+        </div>
+
+        <div class="editor-container">
+            <div id="canvas-container"></div>
+        </div>
+
+        <div class="controls">
+            <h2 style="margin-bottom: 15px;">Actions</h2>
+            
+            <div class="control-group">
+                <label>Gestion des Caméras:</label>
+                <button id="add-camera">➕ Ajouter une Caméra</button>
+                <button id="remove-camera">➖ Supprimer Caméra Sélectionnée</button>
+                <button id="add-multiple">➕ Ajouter 5 Caméras</button>
+            </div>
+
+            <div class="control-group">
+                <label>Position du Widget:</label>
+                <button id="pos-top-left">↖️ Haut Gauche</button>
+                <button id="pos-top-right">↗️ Haut Droite</button>
+                <button id="pos-bottom-left">↙️ Bas Gauche</button>
+                <button id="pos-bottom-right">↘️ Bas Droite</button>
+            </div>
+
+            <div class="control-group">
+                <label>Test de Navigation:</label>
+                <button id="test-next">⏭️ Suivante (simuler Ctrl+→)</button>
+                <button id="test-prev">⏮️ Précédente (simuler Ctrl+←)</button>
+                <button id="test-jump">🎯 Aller à Caméra 3 (simuler Ctrl+3)</button>
+            </div>
+
+            <div class="status" id="status">
+                Initialisé. Utilisez les raccourcis clavier ou cliquez sur les boutons ci-dessus.
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { SceneCanvas, QuickCameraNav } from './src/editor/canvas/index.js';
+
+        const container = document.getElementById('canvas-container');
+        let cameraCounter = 1;
+        let quickNav = null;
+
+        // Scene configuration
+        const sceneConfig = {
+            id: 'test-scene',
+            name: 'Test Navigation',
+            width: 2000,
+            height: 1500,
+            background: {
+                color: '#ffffff',
+                grid: {
+                    type: 'dots',
+                    size: 50,
+                    color: '#cbd5e0',
+                    opacity: 0.3
+                }
+            },
+            cameras: [
+                {
+                    id: 'cam-1',
+                    name: 'Caméra 1',
+                    position: { x: 500, y: 375 },
+                    width: 800,
+                    height: 450,
+                    zoom: 1,
+                    isDefault: true,
+                    color: '#f9a8d4'
+                },
+                {
+                    id: 'cam-2',
+                    name: 'Caméra 2',
+                    position: { x: 1500, y: 375 },
+                    width: 640,
+                    height: 360,
+                    zoom: 1.2,
+                    color: '#60a5fa'
+                },
+                {
+                    id: 'cam-3',
+                    name: 'Caméra 3',
+                    position: { x: 1000, y: 1125 },
+                    width: 800,
+                    height: 450,
+                    zoom: 0.8,
+                    color: '#34d399'
+                }
+            ],
+            layers: []
+        };
+
+        // Create scene canvas
+        const sceneCanvas = new SceneCanvas(container, sceneConfig);
+        cameraCounter = sceneConfig.cameras.length + 1;
+
+        // Initialize quick navigation
+        function initQuickNav(position = 'top-right') {
+            if (quickNav) {
+                quickNav.destroy();
+            }
+
+            quickNav = new QuickCameraNav({
+                container: container,
+                cameras: sceneCanvas.getAllCameras(),
+                selectedCameraId: null,
+                position: position
+            });
+
+            quickNav.setCallbacks({
+                onNavigateToCamera: (cameraId) => {
+                    sceneCanvas.selectCamera(cameraId);
+                    updateStatus(`Navigué vers: ${getCameraName(cameraId)}`);
+                },
+                onNavigateNext: () => {
+                    updateStatus('Navigation: Caméra suivante');
+                },
+                onNavigatePrevious: () => {
+                    updateStatus('Navigation: Caméra précédente');
+                }
+            });
+
+            updateStatus(`Navigation rapide initialisée (position: ${position})`);
+        }
+
+        function getCameraName(cameraId) {
+            const cameras = sceneCanvas.getAllCameras();
+            const camera = cameras.find(c => c.id === cameraId);
+            return camera?.name || cameraId;
+        }
+
+        function updateStatus(message) {
+            const statusEl = document.getElementById('status');
+            const timestamp = new Date().toLocaleTimeString();
+            statusEl.textContent = `[${timestamp}] ${message}`;
+        }
+
+        // Initialize
+        initQuickNav('top-right');
+
+        // Event listeners
+        document.getElementById('add-camera').addEventListener('click', () => {
+            const newCamera = {
+                id: `cam-${cameraCounter}`,
+                name: `Caméra ${cameraCounter}`,
+                position: {
+                    x: Math.random() * 1600 + 200,
+                    y: Math.random() * 1200 + 150
+                },
+                width: 640,
+                height: 360,
+                zoom: 1,
+                color: ['#fbbf24', '#f87171', '#a78bfa', '#fb923c'][Math.floor(Math.random() * 4)]
+            };
+            sceneCanvas.addCamera(newCamera);
+            cameraCounter++;
+            quickNav.updateCameras(sceneCanvas.getAllCameras());
+            updateStatus(`Caméra ajoutée: ${newCamera.name}`);
+        });
+
+        document.getElementById('remove-camera').addEventListener('click', () => {
+            const cameras = sceneCanvas.getAllCameras();
+            const selectedId = sceneCanvas.selectedCameraId;
+            if (selectedId) {
+                const camera = cameras.find(c => c.id === selectedId);
+                if (camera && !camera.isDefault) {
+                    sceneCanvas.removeCamera(selectedId);
+                    quickNav.updateCameras(sceneCanvas.getAllCameras());
+                    updateStatus(`Caméra supprimée: ${camera.name}`);
+                } else {
+                    updateStatus('Erreur: Impossible de supprimer la caméra par défaut');
+                }
+            } else {
+                updateStatus('Erreur: Aucune caméra sélectionnée');
+            }
+        });
+
+        document.getElementById('add-multiple').addEventListener('click', () => {
+            for (let i = 0; i < 5; i++) {
+                const newCamera = {
+                    id: `cam-${cameraCounter}`,
+                    name: `Caméra ${cameraCounter}`,
+                    position: {
+                        x: Math.random() * 1600 + 200,
+                        y: Math.random() * 1200 + 150
+                    },
+                    width: 640,
+                    height: 360,
+                    zoom: 1 + Math.random() * 0.5,
+                    color: ['#fbbf24', '#f87171', '#a78bfa', '#fb923c', '#2dd4bf'][i]
+                };
+                sceneCanvas.addCamera(newCamera);
+                cameraCounter++;
+            }
+            quickNav.updateCameras(sceneCanvas.getAllCameras());
+            updateStatus('5 caméras ajoutées');
+        });
+
+        // Position controls
+        document.getElementById('pos-top-left').addEventListener('click', () => {
+            initQuickNav('top-left');
+        });
+
+        document.getElementById('pos-top-right').addEventListener('click', () => {
+            initQuickNav('top-right');
+        });
+
+        document.getElementById('pos-bottom-left').addEventListener('click', () => {
+            initQuickNav('bottom-left');
+        });
+
+        document.getElementById('pos-bottom-right').addEventListener('click', () => {
+            initQuickNav('bottom-right');
+        });
+
+        // Test navigation
+        document.getElementById('test-next').addEventListener('click', () => {
+            // Simulate Ctrl+→
+            const event = new KeyboardEvent('keydown', {
+                key: 'ArrowRight',
+                ctrlKey: true,
+                bubbles: true
+            });
+            document.dispatchEvent(event);
+        });
+
+        document.getElementById('test-prev').addEventListener('click', () => {
+            // Simulate Ctrl+←
+            const event = new KeyboardEvent('keydown', {
+                key: 'ArrowLeft',
+                ctrlKey: true,
+                bubbles: true
+            });
+            document.dispatchEvent(event);
+        });
+
+        document.getElementById('test-jump').addEventListener('click', () => {
+            // Simulate Ctrl+3
+            const event = new KeyboardEvent('keydown', {
+                key: '3',
+                ctrlKey: true,
+                bubbles: true
+            });
+            document.dispatchEvent(event);
+        });
+
+        console.log('✅ Test de navigation rapide des caméras prêt!');
+        console.log('💡 Utilisez les raccourcis clavier pour naviguer entre les caméras');
+    </script>
+</body>
+</html>

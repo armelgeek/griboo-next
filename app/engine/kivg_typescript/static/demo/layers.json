@@ -1,0 +1,31 @@
+{
+  "slides": [
+    {
+      "index": 0,
+      "duration": 4,
+      "layers": [
+        {
+          "image_path": "demo/1.jpg",
+          "position": {"x": 0, "y": 0},
+          "z_index": 1,
+          "skip_rate": 5
+        },
+        {
+          "image_path": "demo/2.jpg",
+          "position": {"x": 50, "y": 50},
+          "z_index": 2,
+          "skip_rate": 20,
+          "scale": 0.3,
+          "opacity": 0.9
+        },
+        {
+          "image_path": "demo/3.jpeg",
+          "position": {"x": 200, "y": 400},
+          "z_index": 3,
+          "skip_rate": 25,
+          "opacity": 0.95
+        }
+      ]
+    }
+  ]
+}

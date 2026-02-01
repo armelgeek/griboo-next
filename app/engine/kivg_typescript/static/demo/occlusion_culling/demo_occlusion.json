@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Demo: Intelligent Layer Superposition (2D Occlusion Culling)",
+  "description": "Ce fichier démontre la fonctionnalité de gommage intelligent des superpositions. Les couches supérieures (z_index plus élevé) masquent automatiquement les couches inférieures.",
+  
+  "occlusion_culling": true,
+  "background": "#FFFFFF",
+  
+  "layers": [
+    {
+      "id": "layer_circle",
+      "type": "image",
+      "image_path": "demo/occlusion_culling/layer_circle_red.png",
+      "z_index": 0,
+      "occlusion_mode": "auto",
+      "mode": "draw",
+      "skip_rate": 5,
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "layer_rectangle",
+      "type": "image", 
+      "image_path": "demo/occlusion_culling/layer_rectangle_blue.png",
+      "z_index": 1,
+      "occlusion_mode": "auto",
+      "mode": "draw",
+      "skip_rate": 5,
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "layer_star",
+      "type": "image",
+      "image_path": "demo/occlusion_culling/layer_star_green.png",
+      "z_index": 2,
+      "occlusion_mode": "auto",
+      "mode": "draw",
+      "skip_rate": 5,
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+
+  "resolution": {
+    "width": 800,
+    "height": 600
+  },
+  
+  "frame_rate": 30,
+  
+  "comments": {
+    "purpose": "Démonstration de l'Occlusion Culling 2D",
+    "expected_behavior": [
+      "1. Le cercle rouge (z_index=0) est dessiné en premier",
+      "2. Avant de dessiner le rectangle bleu (z_index=1), la zone de superposition sur le cercle rouge est automatiquement effacée",
+      "3. Le rectangle bleu est dessiné",
+      "4. Avant de dessiner l'étoile verte (z_index=2), les zones de superposition sur le rectangle bleu sont effacées",
+      "5. L'étoile verte est dessinée par-dessus"
+    ],
+    "key_concepts": {
+      "z_index": "Indice de profondeur - les valeurs plus élevées sont rendues au-dessus",
+      "occlusion_mode": "auto = découpage automatique, manual = détection seule, none = ignorer",
+      "set_difference": "Opération booléenne A - (A ∩ B) pour découper les couches inférieures"
+    },
+    "usage": "python griboo-engine.py --config demo/occlusion_culling/demo_occlusion.json --occlusion-culling"
+  }
+}

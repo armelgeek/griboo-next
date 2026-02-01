@@ -1,0 +1,178 @@
+{
+  "title": "Layer Eraser Demo",
+  "description": "Demonstrates progressive erasing of individual layers with different styles",
+  "scene_width": 1280,
+  "scene_height": 720,
+  "background": "#FFFFFF",
+  "fps": 30,
+  "slides": [
+    {
+      "id": "slide_1_draw_shapes",
+      "description": "Draw shapes that will be erased",
+      "duration": 3,
+      "skip_rate": 5,
+      "mode": "draw",
+      "layers": [
+        {
+          "id": "circle_layer",
+          "type": "shape",
+          "shape_type": "circle",
+          "position": {
+            "x": 300,
+            "y": 300
+          },
+          "radius": 100,
+          "fill_color": "#3498DB",
+          "stroke_color": "#2980B9",
+          "stroke_width": 3,
+          "mode": "draw",
+          "animation_order": 1
+        },
+        {
+          "id": "rectangle_layer",
+          "type": "shape",
+          "shape_type": "rectangle",
+          "position": {
+            "x": 600,
+            "y": 200
+          },
+          "width": 200,
+          "height": 150,
+          "fill_color": "#E74C3C",
+          "stroke_color": "#C0392B",
+          "stroke_width": 3,
+          "mode": "draw",
+          "animation_order": 2
+        },
+        {
+          "id": "triangle_layer",
+          "type": "shape",
+          "shape_type": "polygon",
+          "points": [
+            {
+              "x": 1000,
+              "y": 350
+            },
+            {
+              "x": 900,
+              "y": 200
+            },
+            {
+              "x": 1100,
+              "y": 200
+            }
+          ],
+          "fill_color": "#2ECC71",
+          "stroke_color": "#27AE60",
+          "stroke_width": 3,
+          "mode": "draw",
+          "animation_order": 3
+        }
+      ]
+    },
+    {
+      "id": "slide_2_erase_progressive",
+      "description": "Erase layers progressively (normal direction)",
+      "duration": 3,
+      "skip_rate": 5,
+      "mode": "eraser",
+      "eraser_config": {
+        "style": "progressive",
+        "direction": "normal",
+        "sync_with_draw": true,
+        "show_eraser_hand": true,
+        "background_color": "#FFFFFF"
+      },
+      "layers": [
+        {
+          "id": "circle_layer",
+          "type": "shape",
+          "shape_type": "circle",
+          "position": {
+            "x": 300,
+            "y": 300
+          },
+          "radius": 100,
+          "fill_color": "#3498DB"
+        },
+        {
+          "id": "rectangle_layer",
+          "type": "shape",
+          "shape_type": "rectangle",
+          "position": {
+            "x": 600,
+            "y": 200
+          },
+          "width": 200,
+          "height": 150,
+          "fill_color": "#E74C3C"
+        },
+        {
+          "id": "triangle_layer",
+          "type": "shape",
+          "shape_type": "polygon",
+          "points": [
+            {
+              "x": 1000,
+              "y": 350
+            },
+            {
+              "x": 900,
+              "y": 200
+            },
+            {
+              "x": 1100,
+              "y": 200
+            }
+          ],
+          "fill_color": "#2ECC71"
+        }
+      ]
+    },
+    {
+      "id": "slide_3_draw_again",
+      "description": "Draw new shapes",
+      "duration": 2,
+      "skip_rate": 5,
+      "mode": "draw",
+      "layers": [
+        {
+          "id": "star_layer",
+          "type": "text",
+          "text": "Layer Eraser Complete!",
+          "position": {
+            "x": 640,
+            "y": 360
+          },
+          "text_config": {
+            "font": "Patrick Hand",
+            "size": 48,
+            "color": "#9B59B6",
+            "align": "center"
+          },
+          "mode": "draw"
+        }
+      ]
+    }
+  ],
+  "eraser_assets": {
+    "eraser_image": "data/images/eraser.png",
+    "eraser_mask": "data/images/eraser-mask.png"
+  },
+  "demo_info": {
+    "effect_type": "layer_eraser",
+    "available_styles": [
+      "progressive",
+      "fast",
+      "by_sections",
+      "reverse",
+      "simultaneous"
+    ],
+    "available_directions": [
+      "normal",
+      "reversed",
+      "inside_out",
+      "outside_in"
+    ]
+  }
+}

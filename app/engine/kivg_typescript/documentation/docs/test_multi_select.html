@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test: Sélection Multiple par Glissement</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: #f0f4f8;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .header {
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .instructions {
+            padding: 15px 20px;
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .instructions h2 {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #2d3748;
+        }
+
+        .instructions ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .instructions li {
+            padding: 5px 0;
+            font-size: 14px;
+            color: #4a5568;
+        }
+
+        .instructions li::before {
+            content: "✓ ";
+            color: #48bb78;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .canvas-wrapper {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background: #e2e8f0;
+        }
+
+        #scene-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .status {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            font-size: 14px;
+            color: #4a5568;
+            max-width: 400px;
+        }
+
+        .status strong {
+            color: #667eea;
+        }
+
+        .toolbar {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            flex-direction: column;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            background: white;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Test: Sélection Multiple par Glissement</h1>
+            <p>Testez la fonctionnalité de sélection multiple d'éléments</p>
+        </div>
+
+        <div class="instructions">
+            <h2>Instructions:</h2>
+            <ul>
+                <li><strong>Glissez</strong> sur la scène pour créer une zone de sélection (rectangle bleu)</li>
+                <li>Tous les éléments dans la zone seront sélectionnés</li>
+                <li><strong>Ctrl+Click</strong> pour ajouter/enlever des éléments de la sélection</li>
+                <li><strong>Delete</strong> ou <strong>Backspace</strong> pour supprimer les éléments sélectionnés</li>
+                <li><strong>Escape</strong> pour tout désélectionner</li>
+                <li>Maintenez <kbd>Espace</kbd> pour déplacer la scène</li>
+            </ul>
+        </div>
+
+        <div class="canvas-wrapper">
+            <div id="scene-canvas"></div>
+            <div class="toolbar">
+                <button class="btn" id="btn-add-shape">🟦 Ajouter Forme</button>
+                <button class="btn" id="btn-add-text">🔤 Ajouter Texte</button>
+            </div>
+            <div class="status">
+                <strong>Sélection:</strong> <span id="status-text">Aucun élément sélectionné</span>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { SceneCanvas } from './src/editor/canvas/index.ts';
+
+        // Scene configuration
+        const sceneConfig = {
+            id: 'test-scene',
+            name: 'Test Multi-Selection',
+            width: 2000,
+            height: 1500,
+            background: {
+                color: '#ffffff',
+                grid: {
+                    type: 'dots',
+                    size: 50,
+                    color: '#cbd5e0',
+                    opacity: 0.3
+                }
+            },
+            cameras: [],
+            layers: []
+        };
+
+        // Create scene canvas
+        const canvasContainer = document.getElementById('scene-canvas');
+        const sceneCanvas = new SceneCanvas(canvasContainer, sceneConfig);
+
+        // Status display
+        const statusText = document.getElementById('status-text');
+
+        // Generate unique ID
+        const generateId = (prefix) => {
+            if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+                return `${prefix}-${crypto.randomUUID()}`;
+            }
+            return `${prefix}-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+        };
+
+        // Add some initial elements for testing
+        const colors = ['#f87171', '#fb923c', '#fbbf24', '#34d399', '#60a5fa', '#a78bfa', '#f9a8d4'];
+        
+        for (let i = 0; i < 8; i++) {
+            const x = 300 + (i % 4) * 250;
+            const y = 400 + Math.floor(i / 4) * 250;
+            
+            sceneCanvas.addShapeLayer({
+                id: generateId('shape'),
+                shape: i % 2 === 0 ? 'rectangle' : 'circle',
+                position: { x, y },
+                width: 150,
+                height: 150,
+                fillColor: colors[i % colors.length],
+                strokeColor: '#2d3748',
+                strokeWidth: 2
+            });
+        }
+
+        // Add some text elements
+        for (let i = 0; i < 3; i++) {
+            const x = 400 + i * 300;
+            const y = 900;
+            
+            sceneCanvas.addTextLayer({
+                id: generateId('text'),
+                position: { x, y },
+                text_config: {
+                    text: `Texte ${i + 1}`,
+                    size: 48,
+                    color: '#2d3748',
+                    align: 'center'
+                }
+            });
+        }
+
+        // Wire up callbacks to track selection
+        sceneCanvas.setCallbacks({
+            onLayerSelect: (layerId) => {
+                updateStatus();
+            }
+        });
+
+        function updateStatus() {
+            const selectedIds = sceneCanvas.getSelectedLayerIds();
+            if (selectedIds.length === 0) {
+                statusText.textContent = 'Aucun élément sélectionné';
+            } else if (selectedIds.length === 1) {
+                statusText.textContent = `1 élément sélectionné: ${selectedIds[0]}`;
+            } else {
+                statusText.textContent = `${selectedIds.length} éléments sélectionnés`;
+            }
+        }
+
+        // Buttons
+        document.getElementById('btn-add-shape').addEventListener('click', () => {
+            sceneCanvas.addShapeLayer({
+                id: generateId('shape'),
+                shape: Math.random() > 0.5 ? 'rectangle' : 'circle',
+                position: { x: 0, y: 0 }, // Will be centered in viewport
+                width: 150,
+                height: 150,
+                fillColor: colors[Math.floor(Math.random() * colors.length)],
+                strokeColor: '#2d3748',
+                strokeWidth: 2
+            });
+        });
+
+        document.getElementById('btn-add-text').addEventListener('click', () => {
+            sceneCanvas.addTextLayer({
+                id: generateId('text'),
+                position: { x: 0, y: 0 }, // Will be centered in viewport
+                text_config: {
+                    text: 'Nouveau Texte',
+                    size: 48,
+                    color: '#2d3748',
+                    align: 'center'
+                }
+            });
+        });
+
+        // Log when ready
+        console.log('🎉 Test page ready!');
+        console.log('📝 Try dragging to select multiple elements');
+        console.log('✏️ Use Ctrl+Click to add/remove elements from selection');
+        
+        // Initial status
+        updateStatus();
+    </script>
+</body>
+
+</html>

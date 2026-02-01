@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Demo: Occlusion Erase Layer Configuration",
+  "description": "Ce fichier démontre la configuration 'occlusion_erase' au niveau des couches. Cette configuration contrôle l'animation d'effacement lors de la superposition de couches avec le système d'occlusion culling.",
+  "occlusion_culling": true,
+  "background": "#FFFFFF",
+  "layers": [
+    {
+      "id": "base_circle",
+      "type": "shape",
+      "shape_type": "circle",
+      "position": {
+        "x": 350,
+        "y": 360
+      },
+      "radius": 180,
+      "fill_color": "#E74C3C",
+      "stroke_color": "#C0392B",
+      "stroke_width": 4,
+      "z_index": 0,
+      "mode": "draw",
+      "occlusion_mode": "auto",
+      "skip_rate": 5
+    },
+    {
+      "id": "overlay_rectangle",
+      "type": "shape",
+      "shape_type": "rectangle",
+      "position": {
+        "x": 450,
+        "y": 280
+      },
+      "width": 250,
+      "height": 180,
+      "fill_color": "#3498DB",
+      "stroke_color": "#2980B9",
+      "stroke_width": 4,
+      "z_index": 1,
+      "mode": "draw",
+      "occlusion_mode": "auto",
+      "skip_rate": 5,
+      "occlusion_erase": {
+        "duration": 1.0,
+        "radius": 30,
+        "show_eraser": true,
+        "content_threshold": 250
+      }
+    },
+    {
+      "id": "top_triangle",
+      "type": "shape",
+      "shape_type": "triangle",
+      "position": {
+        "x": 600,
+        "y": 250
+      },
+      "width": 200,
+      "height": 180,
+      "fill_color": "#F1C40F",
+      "stroke_color": "#F39C12",
+      "stroke_width": 3,
+      "z_index": 2,
+      "mode": "draw",
+      "occlusion_mode": "auto",
+      "skip_rate": 5,
+      "occlusion_erase": {
+        "duration": 1.5,
+        "radius": 40,
+        "show_eraser": true,
+        "content_threshold": 240
+      }
+    },
+    {
+      "id": "fast_erase_circle",
+      "type": "shape",
+      "shape_type": "circle",
+      "position": {
+        "x": 800,
+        "y": 400
+      },
+      "radius": 120,
+      "fill_color": "#2ECC71",
+      "stroke_color": "#27AE60",
+      "stroke_width": 4,
+      "z_index": 3,
+      "mode": "draw",
+      "occlusion_mode": "auto",
+      "skip_rate": 5,
+      "occlusion_erase": {
+        "duration": 2,
+        "radius": 15,
+        "show_eraser": true,
+        "content_threshold": 250
+      }
+    }
+  ],
+  "resolution": {
+    "width": 1280,
+    "height": 720
+  },
+  "frame_rate": 30,
+  "comments": {
+    "purpose": "Démonstration de la configuration 'occlusion_erase' au niveau des couches",
+    "occlusion_erase_options": {
+      "duration": "Durée de l'animation d'effacement en secondes (défaut: 0.5)",
+      "radius": "Rayon de l'effaceur en pixels (défaut: 20)",
+      "show_eraser": "Afficher la main avec l'effaceur pendant l'animation (défaut: true)",
+      "content_threshold": "Seuil de détection du contenu (défaut: 250)"
+    },
+    "expected_behavior": [
+      "1. Le cercle rouge de base (z_index=0) est dessiné en premier",
+      "2. Le rectangle bleu (z_index=1) chevauche le cercle - la zone est effacée avec une animation lente (1.0s) et un grand rayon (30px)",
+      "3. Le triangle jaune (z_index=2) chevauche le rectangle - effacement encore plus lent (1.5s) avec rayon de 40px",
+      "4. Le cercle vert (z_index=3) chevauche le triangle - effacement rapide (0.3s) sans afficher l'effaceur"
+    ],
+    "layer_configs": {
+      "overlay_rectangle": "Effacement lent (1.0s), grand rayon (30px), effaceur visible",
+      "top_triangle": "Effacement très lent (1.5s), très grand rayon (40px), effaceur visible",
+      "fast_erase_circle": "Effacement rapide (0.3s), petit rayon (15px), effaceur caché"
+    },
+    "usage": "python griboo-engine.py --config demo/demo_occlusion_erase.json --occlusion-culling"
+  }
+}

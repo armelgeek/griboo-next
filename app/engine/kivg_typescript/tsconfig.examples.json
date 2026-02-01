@@ -1,0 +1,12 @@
+{
+    "extends": "./tsconfig.json",
+    "include": [
+        "src/**/*",
+        "examples/**/*"
+    ],
+    "compilerOptions": {
+        "noEmit": true,
+        "module": "CommonJS",
+        "types": ["node"]
+    }
+}

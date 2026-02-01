@@ -1,0 +1,215 @@
+{
+  "title": "Rubber Tool Demo",
+  "description": "Demonstrates the Rubber (eraser) tool for direct pixel manipulation in doodle animations",
+  "scene_width": 1280,
+  "scene_height": 720,
+  "background": "#FFFFFF",
+  "fps": 30,
+  "slides": [
+    {
+      "id": "slide_1_doodle",
+      "description": "Create a doodle drawing",
+      "duration": 4,
+      "skip_rate": 5,
+      "mode": "draw",
+      "layers": [
+        {
+          "id": "title",
+          "type": "text",
+          "text": "Rubber Tool Demo",
+          "position": {
+            "x": 640,
+            "y": 60
+          },
+          "text_config": {
+            "font": "Patrick Hand",
+            "size": 48,
+            "color": "#2C3E50",
+            "align": "center"
+          },
+          "mode": "draw",
+          "animation_order": 1
+        },
+        {
+          "id": "doodle_circle",
+          "type": "shape",
+          "shape_type": "circle",
+          "position": {
+            "x": 300,
+            "y": 350
+          },
+          "radius": 100,
+          "fill_color": "#E74C3C",
+          "stroke_color": "#000000",
+          "stroke_width": 3,
+          "mode": "draw",
+          "animation_order": 2
+        },
+        {
+          "id": "doodle_square",
+          "type": "shape",
+          "shape_type": "rectangle",
+          "position": {
+            "x": 540,
+            "y": 250
+          },
+          "width": 200,
+          "height": 200,
+          "fill_color": "#3498DB",
+          "stroke_color": "#000000",
+          "stroke_width": 3,
+          "mode": "draw",
+          "animation_order": 3
+        },
+        {
+          "id": "doodle_triangle",
+          "type": "shape",
+          "shape_type": "polygon",
+          "points": [
+            {
+              "x": 980,
+              "y": 450
+            },
+            {
+              "x": 880,
+              "y": 250
+            },
+            {
+              "x": 1080,
+              "y": 250
+            }
+          ],
+          "fill_color": "#2ECC71",
+          "stroke_color": "#000000",
+          "stroke_width": 3,
+          "mode": "draw",
+          "animation_order": 4
+        },
+        {
+          "id": "horizontal_line",
+          "type": "line",
+          "start": {
+            "x": 100,
+            "y": 550
+          },
+          "end": {
+            "x": 1180,
+            "y": 550
+          },
+          "stroke_color": "#000000",
+          "stroke_width": 4,
+          "mode": "draw",
+          "animation_order": 5
+        }
+      ]
+    },
+    {
+      "id": "slide_2_rubber_erase",
+      "description": "Use rubber tool to erase parts of the doodle",
+      "duration": 4,
+      "skip_rate": 3,
+      "mode": "rubber",
+      "rubber_config": {
+        "radius": 40,
+        "shape": "circle",
+        "background_color": "#FFFFFF",
+        "softness": 0.0,
+        "show_rubber_hand": true,
+        "erase_pattern": "path",
+        "path": [
+          {
+            "x": 300,
+            "y": 350
+          },
+          {
+            "x": 400,
+            "y": 350
+          },
+          {
+            "x": 500,
+            "y": 350
+          },
+          {
+            "x": 600,
+            "y": 350
+          },
+          {
+            "x": 700,
+            "y": 350
+          },
+          {
+            "x": 800,
+            "y": 350
+          },
+          {
+            "x": 900,
+            "y": 350
+          },
+          {
+            "x": 980,
+            "y": 350
+          }
+        ]
+      },
+      "layers": [
+        {
+          "ref": "title"
+        },
+        {
+          "ref": "doodle_circle"
+        },
+        {
+          "ref": "doodle_square"
+        },
+        {
+          "ref": "doodle_triangle"
+        },
+        {
+          "ref": "horizontal_line"
+        }
+      ]
+    },
+    {
+      "id": "slide_3_result",
+      "description": "Show the result after rubber erasing",
+      "duration": 2,
+      "mode": "static",
+      "layers": [
+        {
+          "id": "result_text",
+          "type": "text",
+          "text": "Rubber Tool Applied!",
+          "position": {
+            "x": 640,
+            "y": 360
+          },
+          "text_config": {
+            "font": "Patrick Hand",
+            "size": 48,
+            "color": "#27AE60",
+            "align": "center"
+          }
+        }
+      ]
+    }
+  ],
+  "rubber_assets": {
+    "rubber_image": "data/images/eraser.png",
+    "rubber_mask": "data/images/eraser-mask.png"
+  },
+  "demo_info": {
+    "effect_type": "rubber_tool",
+    "available_shapes": [
+      "circle",
+      "square"
+    ],
+    "available_patterns": [
+      "path",
+      "diagonal",
+      "horizontal",
+      "vertical"
+    ],
+    "softness_range": "0.0 (hard edge) to 1.0 (soft/feathered edge)",
+    "description": "The Rubber tool provides direct pixel manipulation for erasing doodle drawings, supporting circular or square erasers with configurable size and softness"
+  }
+}

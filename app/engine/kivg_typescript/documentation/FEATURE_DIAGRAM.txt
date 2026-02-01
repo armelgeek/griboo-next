@@ -1,0 +1,138 @@
+┌────────────────────────────────────────────────────────────────────────┐
+│         TEXT LAYER DOUBLE-CLICK FEATURE - FLOW DIAGRAM                │
+└────────────────────────────────────────────────────────────────────────┘
+
+SCENARIO 1: Creating a New Text Layer
+═══════════════════════════════════════
+
+    User                    Canvas                     TextEditor
+      │                        │                            │
+      │  Double-click empty    │                            │
+      │  space on canvas       │                            │
+      ├───────────────────────>│                            │
+      │                        │                            │
+      │                        │  1. Calculate position     │
+      │                        │  2. Generate unique ID     │
+      │                        │  3. Create TextLayer       │
+      │                        │  4. Add to scene           │
+      │                        │  5. Select layer           │
+      │                        │                            │
+      │                        │  Open text editor          │
+      │                        ├───────────────────────────>│
+      │                        │                            │
+      │  ┌─────────────────────────────────────────────┐   │
+      │  │  Text Editor Modal                          │   │
+      │  │  ┌───────────────────────────────────────┐  │   │
+      │  │  │ Modifier le texte                     │  │   │
+      │  │  ├───────────────────────────────────────┤  │   │
+      │  │  │                                       │  │   │
+      │  │  │  Nouveau Texte [selected]            │  │   │
+      │  │  │                                       │  │   │
+      │  │  └───────────────────────────────────────┘  │   │
+      │  │  [Annuler]             [Enregistrer]        │   │
+      │  └─────────────────────────────────────────────┘   │
+      │                                                     │
+      │  Type text and press Ctrl+Enter                    │
+      ├────────────────────────────────────────────────────>│
+      │                        │                            │
+      │                        │  Update layer with text    │
+      │                        │<───────────────────────────┤
+      │                        │                            │
+      │                        │  Redraw canvas             │
+      │                        │                            │
+      │  Text appears on       │                            │
+      │  canvas at clicked     │                            │
+      │  position              │                            │
+      │<───────────────────────│                            │
+      │                        │                            │
+
+
+SCENARIO 2: Editing Existing Text Layer
+════════════════════════════════════════
+
+    User                    Canvas                     TextEditor
+      │                        │                            │
+      │  Double-click on       │                            │
+      │  existing text layer   │                            │
+      ├───────────────────────>│                            │
+      │                        │                            │
+      │                        │  1. Get layer ID           │
+      │                        │  2. Get current text       │
+      │                        │  3. Get styling info       │
+      │                        │                            │
+      │                        │  Open text editor          │
+      │                        ├───────────────────────────>│
+      │                        │                            │
+      │  ┌─────────────────────────────────────────────┐   │
+      │  │  Text Editor Modal                          │   │
+      │  │  ┌───────────────────────────────────────┐  │   │
+      │  │  │ Modifier le texte                     │  │   │
+      │  │  ├───────────────────────────────────────┤  │   │
+      │  │  │                                       │  │   │
+      │  │  │  Current Text Content [selected]     │  │   │
+      │  │  │                                       │  │   │
+      │  │  └───────────────────────────────────────┘  │   │
+      │  │  [Annuler]             [Enregistrer]        │   │
+      │  └─────────────────────────────────────────────┘   │
+      │                                                     │
+      │  Modify text and press Ctrl+Enter                  │
+      ├────────────────────────────────────────────────────>│
+      │                        │                            │
+      │                        │  Update layer with new text│
+      │                        │<───────────────────────────┤
+      │                        │                            │
+      │                        │  Redraw canvas             │
+      │                        │                            │
+      │  Text updated on       │                            │
+      │  canvas                │                            │
+      │<───────────────────────│                            │
+      │                        │                            │
+
+
+KEY COMPONENTS
+══════════════
+
+┌────────────────────────────────────────────────────────────────┐
+│ SceneCanvas (scene-canvas.ts)                                  │
+│  ├─ Double-click event handler on stage                        │
+│  ├─ Position calculation (screen → scene coordinates)          │
+│  ├─ Layer creation and management                              │
+│  └─ openTextEditor() method                                    │
+└────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌────────────────────────────────────────────────────────────────┐
+│ TextLayer (layer-text.ts)                                      │
+│  ├─ Konva.Text node                                            │
+│  ├─ Double-click event listener                                │
+│  ├─ onDoubleClick callback → opens editor                      │
+│  └─ update() method to change text                             │
+└────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌────────────────────────────────────────────────────────────────┐
+│ TextEditor (text-editor.ts)                                    │
+│  ├─ Modal overlay                                              │
+│  ├─ Textarea for text input                                    │
+│  ├─ Save/Cancel buttons                                        │
+│  ├─ Keyboard shortcuts (Ctrl+Enter, Escape)                    │
+│  └─ Callbacks for save/cancel actions                          │
+└────────────────────────────────────────────────────────────────┘
+
+
+KEYBOARD SHORTCUTS
+═══════════════════
+
+  Ctrl+Enter (or Cmd+Enter)  →  Save and close editor
+  Escape                     →  Cancel and close editor
+  Click outside modal        →  Cancel and close editor
+
+
+DEFAULT TEXT CONFIGURATION
+═══════════════════════════
+
+  Text:       "Nouveau Texte"
+  Font Size:  48px
+  Font:       Arial
+  Color:      #2d3748 (dark gray)
+  Alignment:  center

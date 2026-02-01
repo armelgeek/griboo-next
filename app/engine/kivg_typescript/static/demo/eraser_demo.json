@@ -1,0 +1,122 @@
+{
+  "title": "Eraser Effect Demo",
+  "description": "Demonstrates the eraser effect for layers and scenes in doodle animations",
+  "scene_width": 1280,
+  "scene_height": 720,
+  "background": "#FFFFFF",
+  "slides": [
+    {
+      "id": "slide_1_draw",
+      "description": "Scene 1: Draw elements (will be erased in next scene)",
+      "duration": 3,
+      "skip_rate": 5,
+      "mode": "draw",
+      "layers": [
+        {
+          "type": "image",
+          "source": "demo/icons/yy.svg",
+          "position": {
+            "x": 10,
+            "y": 50
+          },
+          "width": 300,
+          "height": 300,
+          "mode": "hybrid",
+          "description": "Hybrid mode: stroke layer drawn first, then color fill layer revealed"
+        }
+      ]
+    },
+    {
+      "id": "slide_2_erase",
+      "description": "Scene 2: Erase elements with eraser effect (reverse of drawing)",
+      "duration": 3,
+      "skip_rate": 5,
+      "mode": "eraser",
+      "transition": {
+        "type": "none"
+      },
+      "eraser_config": {
+        "style": "progressive",
+        "direction": "reversed",
+        "sync_with_draw": true,
+        "show_eraser_hand": true
+      },
+      "layers": [
+        {
+          "type": "image",
+          "source": "demo/icons/yy.svg",
+          "position": {
+            "x": 10,
+            "y": 50
+          },
+          "width": 300,
+          "height": 300,
+          "mode": "hybrid",
+          "description": "Hybrid mode: stroke layer drawn first, then color fill layer revealed"
+        }
+      ]
+    },
+    {
+      "id": "slide_3_new_content",
+      "description": "Scene 3: Draw new content after erasing",
+      "duration": 3,
+      "skip_rate": 5,
+      "mode": "draw",
+      "layers": [
+        {
+          "id": "new_text",
+          "type": "text",
+          "text": "New Content!",
+          "position": {
+            "x": 640,
+            "y": 360
+          },
+          "text_config": {
+            "font": "Patrick Hand",
+            "size": 64,
+            "color": "#00AA00",
+            "align": "center"
+          },
+          "mode": "draw",
+          "animation_order": 1
+        }
+      ]
+    }
+  ],
+  "transitions": [
+    {
+      "after_slide": 0,
+      "type": "none",
+      "duration": 0.5
+    },
+    {
+      "after_slide": 1,
+      "type": "none",
+      "duration": 0.5
+    }
+  ],
+  "eraser_assets": {
+    "eraser_image": "data/images/eraser.png",
+    "eraser_mask": "data/images/eraser-mask.png"
+  },
+  "usage_notes": {
+    "eraser_styles": [
+      "progressive - Erase progressively following the drawing path",
+      "fast - Erase quickly with higher skip rate",
+      "by_sections - Erase by sections/segments",
+      "reverse - Erase in reverse order of drawing",
+      "simultaneous - Erase all at once"
+    ],
+    "eraser_directions": [
+      "normal - Erase from start to end (same as drawing)",
+      "reversed - Erase from end to start (reverse of drawing)",
+      "inside_out - Erase from center outward",
+      "outside_in - Erase from edges toward center"
+    ],
+    "common_uses": [
+      "Transition between two ideas",
+      "Cleaning the board before a new explanation",
+      "Transformation effect from one element to another"
+    ]
+  }
+}

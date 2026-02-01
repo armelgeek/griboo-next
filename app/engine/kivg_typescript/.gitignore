@@ -1,0 +1,41 @@
+.vscode/
+.parcel-cache/
+.cache/
+dist/
+node_modules/
+.env
+.DS_Store
+npm-debug.log*
+yarn-debug.log*
+parcel-dist/
+static/lib/
+test_hybrid_layer_fix.html
+*_backup.png
+*.js
+!*.config.js
+kivg/**/*.js
+
+# Output directory for test videos and images
+output/
+
+# Test output images and files
+output_*.png
+COMPARISON.png
+test-*.js
+test-*.ts
+inspect-*.js
+create-*.js
+test_stroke_issue.js
+verify_fix.js
+test_output/
+test_output_transparency/
+
+# Temporary test files (legacy - kept for backwards compatibility)
+test_camera_detailed.ts
+test_camera_no_skip.ts
+test_camera_parallel.ts
+
+# Temporary frame files
+temp_frames/
+**/temp_frames/
+test-camera-colors.html

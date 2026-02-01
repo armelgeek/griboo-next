@@ -1,0 +1,58 @@
+{
+  "description": "Test configuration for kivg core image draw mode patterns",
+  "note": "This demo tests the new 'draw' pattern added to ColoringAnimation class in plugins/kivg/core/image.py",
+  "scene_width": 640,
+  "scene_height": 480,
+  "background": "#FFFFFF",
+  
+  "layers": [
+    {
+      "type": "image",
+      "source": "data/images/un.jpg",
+      "position": {"x": 20, "y": 20},
+      "mode": "coloriage",
+      "coloriage_pattern": "draw",
+      "animation_mode": "pixel",
+      "split_len": 15,
+      "description": "Tests the new 'draw' pattern which uses grid-based nearest-neighbor approach from sketch.py"
+    }
+  ],
+  "animation_patterns": {
+    "available_patterns": ["diagonal", "horizontal", "vertical", "draw"],
+    "pattern_descriptions": {
+      "diagonal": "Zigzag pattern following diagonals (y+x constant)",
+      "horizontal": "Left to right, row by row from top to bottom",
+      "vertical": "Top to bottom, column by column from left to right",
+      "draw": "Grid-based approach with nearest-neighbor cell selection (like sketch.py)"
+    }
+  },
+  "test_cases": [
+    {
+      "name": "Test Draw Pattern with small grid",
+      "pattern": "draw",
+      "split_len": 10,
+      "expected": "Image divided into 10x10 pixel grid cells, drawn in nearest-neighbor order"
+    },
+    {
+      "name": "Test Draw Pattern with large grid",
+      "pattern": "draw",
+      "split_len": 50,
+      "expected": "Image divided into 50x50 pixel grid cells, fewer cells, faster animation"
+    },
+    {
+      "name": "Test Diagonal Pattern",
+      "pattern": "diagonal",
+      "expected": "Classic whiteboard diagonal zigzag effect"
+    },
+    {
+      "name": "Test Horizontal Pattern",
+      "pattern": "horizontal",
+      "expected": "Line by line horizontal reveal"
+    },
+    {
+      "name": "Test Vertical Pattern",
+      "pattern": "vertical",
+      "expected": "Column by column vertical reveal"
+    }
+  ]
+}

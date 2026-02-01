@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frontend HTTP Assets Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+
+        .image-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .image-box {
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            min-width: 200px;
+        }
+
+        .image-box img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+
+        .image-label {
+            margin-top: 8px;
+            font-size: 0.85em;
+            color: #718096;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 1em;
+            cursor: pointer;
+            margin: 5px;
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .log {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+        }
+
+        .log-entry {
+            padding: 5px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .success { color: #38a169; }
+        .error { color: #e53e3e; }
+        .info { color: #3182ce; }
+        .warning { color: #d69e2e; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌐 Frontend HTTP Assets Test</h1>
+
+        <!-- Cache Stats -->
+        <div class="card">
+            <h2>📊 Cache Statistics</h2>
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-label">Cache Entries</div>
+                    <div class="stat-value" id="cacheEntries">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Total Size</div>
+                    <div class="stat-value" id="cacheSize">0 KB</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Utilization</div>
+                    <div class="stat-value" id="cacheUtil">0%</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Cache Hits</div>
+                    <div class="stat-value" id="cacheHits">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Cache Misses</div>
+                    <div class="stat-value" id="cacheMisses">0</div>
+                </div>
+            </div>
+            <button onclick="updateStats()">🔄 Refresh Stats</button>
+            <button onclick="clearCache()">🗑️ Clear Cache</button>
+        </div>
+
+        <!-- Test Actions -->
+        <div class="card">
+            <h2>🧪 Test Actions</h2>
+            <button onclick="loadTestImages()">📥 Load Test Images</button>
+            <button onclick="loadTestImagesAgain()">🔁 Load Again (Test Cache)</button>
+            <button onclick="testRetry()">⚠️ Test Retry Logic</button>
+        </div>
+
+        <!-- Loaded Images -->
+        <div class="card">
+            <h2>🖼️ Loaded Images</h2>
+            <div class="image-row" id="imageContainer">
+                <p style="color: #718096;">No images loaded yet. Click "Load Test Images" to start.</p>
+            </div>
+        </div>
+
+        <!-- Log -->
+        <div class="card">
+            <h2>📝 Activity Log</h2>
+            <div class="log" id="logContainer">
+                <div class="log-entry info">Ready to test HTTP asset loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { getGlobalCache } from './src/frontend/utils/asset_cache.js';
+        import { fetchImage } from './src/frontend/utils/http_loader.js';
+
+        // Test URLs (using publicly available images)
+        const TEST_IMAGES = [
+            'https://via.placeholder.com/300x200/667eea/ffffff?text=Test+Image+1',
+            'https://via.placeholder.com/300x200/764ba2/ffffff?text=Test+Image+2',
+            'https://via.placeholder.com/300x200/38a169/ffffff?text=Test+Image+3'
+        ];
+
+        const cache = getGlobalCache();
+        let loadCount = 0;
+
+        function log(message, type = 'info') {
+            const logContainer = document.getElementById('logContainer');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        async function updateStats() {
+            const stats = cache.getStats();
+            document.getElementById('cacheEntries').textContent = stats.entries;
+            document.getElementById('cacheSize').textContent = Math.round(stats.totalSize / 1024) + ' KB';
+            document.getElementById('cacheUtil').textContent = stats.utilizationPercent.toFixed(1) + '%';
+            document.getElementById('cacheHits').textContent = stats.hits;
+            document.getElementById('cacheMisses').textContent = stats.misses;
+        }
+
+        async function clearCache() {
+            log('Clearing cache...', 'warning');
+            await cache.clear();
+            log('Cache cleared!', 'success');
+            updateStats();
+            document.getElementById('imageContainer').innerHTML = '<p style="color: #718096;">Cache cleared. Load images again to test.</p>';
+        }
+
+        async function loadTestImages() {
+            log('Loading test images from HTTP URLs...', 'info');
+            const container = document.getElementById('imageContainer');
+            container.innerHTML = '';
+
+            for (const url of TEST_IMAGES) {
+                try {
+                    log(`Fetching: ${url}`, 'info');
+                    const startTime = Date.now();
+                    
+                    const blob = await fetchImage(url, { retries: 3, timeout: 30000 });
+                    
+                    const duration = Date.now() - startTime;
+                    log(`✅ Loaded in ${duration}ms`, 'success');
+
+                    // Store in cache
+                    await cache.set(url, blob);
+
+                    // Display image
+                    const imageBox = document.createElement('div');
+                    imageBox.className = 'image-box';
+                    
+                    const img = document.createElement('img');
+                    img.src = URL.createObjectURL(blob);
+                    img.alt = 'Test Image';
+                    
+                    const label = document.createElement('div');
+                    label.className = 'image-label';
+                    label.textContent = `Load #${++loadCount} - ${duration}ms`;
+                    
+                    imageBox.appendChild(img);
+                    imageBox.appendChild(label);
+                    container.appendChild(imageBox);
+
+                    await updateStats();
+                } catch (error) {
+                    log(`❌ Failed to load: ${error.message}`, 'error');
+                }
+            }
+
+            log('All images loaded!', 'success');
+        }
+
+        async function loadTestImagesAgain() {
+log('Re-loading images (should use cache)...', 'info');
+            const container = document.getElementById('imageContainer');
+            container.innerHTML = '';
+
+            for (const url of TEST_IMAGES) {
+                try {
+                    const startTime = Date.now();
+                    
+                    // Check cache first
+                    let blob = await cache.get(url);
+                    const fromCache = !!blob;
+                    
+                    if (!blob) {
+                        log(`Cache miss for: ${url}`, 'warning');
+                        blob = await fetchImage(url, { retries: 3, timeout: 30000 });
+                        await cache.set(url, blob);
+                    } else {
+                        log(`✅ Cache hit for: ${url}`, 'success');
+                    }
+                    
+                    const duration = Date.now() - startTime;
+                    log(`Loaded in ${duration}ms ${fromCache ? '(cached!)' : ''}`, 'success');
+
+                    // Display image
+                    const imageBox = document.createElement('div');
+                    imageBox.className = 'image-box';
+                    
+                    const img = document.createElement('img');
+                    img.src = URL.createObjectURL(blob);
+                    img.alt = 'Test Image';
+                    
+                    const label = document.createElement('div');
+                    label.className = 'image-label';
+                    label.textContent = `Load #${++loadCount} - ${duration}ms ${fromCache ? '(cached)' : ''}`;
+                    
+                    imageBox.appendChild(img);
+                    imageBox.appendChild(label);
+                    container.appendChild(imageBox);
+
+                    await updateStats();
+                } catch (error) {
+                    log(`❌ Failed to load: ${error.message}`, 'error');
+                }
+            }
+        }
+
+        async function testRetry() {
+            log('Testing retry logic with invalid URL...', 'info');
+            const invalidUrl = 'https://httpstat.us/500'; // Returns HTTP 500
+            
+            try {
+                await fetchImage(invalidUrl, { retries: 3, timeout: 5000 });
+                log('❌ Should have failed!', 'error');
+            } catch (error) {
+                log(`✅ Retry test passed: ${error.message}`, 'success');
+            }
+        }
+
+        // Global functions
+        window.loadTestImages = loadTestImages;
+        window.loadTestImagesAgain = loadTestImagesAgain;
+        window.testRetry = testRetry;
+        window.updateStats = updateStats;
+        window.clearCache = clearCache;
+
+        // Initial stats update
+        updateStats();
+        log('Frontend HTTP Assets Test initialized!', 'success');
+    </script>
+</body>
+</html>

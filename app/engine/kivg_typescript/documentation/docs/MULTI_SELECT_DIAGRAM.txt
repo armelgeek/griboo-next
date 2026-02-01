@@ -1,0 +1,254 @@
+┌────────────────────────────────────────────────────────────────────────┐
+│              MULTI-SELECT DRAG FEATURE - FLOW DIAGRAM                  │
+└────────────────────────────────────────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════════════════
+SCENARIO 1: Drag to Select Multiple Elements
+═══════════════════════════════════════════════════════════════════════════
+
+    User                    Canvas                     Selection System
+      │                        │                              │
+      │  Mouse Down on         │                              │
+      │  empty canvas          │                              │
+      ├───────────────────────>│                              │
+      │                        │  Start selection mode        │
+      │                        │  Store start position        │
+      │                        │  Clear existing selection    │
+      │                        │                              │
+      │  Drag mouse            │                              │
+      │  (creates box)         │                              │
+      ├───────────────────────>│                              │
+      │                        │                              │
+      │  ┌──────────────────────────────────────┐            │
+      │  │  Canvas View                         │            │
+      │  │  ┌────────────────────────────────┐  │            │
+      │  │  │  ╔══════════════════╗           │  │            │
+      │  │  │  ║ Selection Box    ║  [○]      │  │            │
+      │  │  │  ║  (Blue dashed)   ║           │  │            │
+      │  │  │  ║    [■]   [△]     ║           │  │            │
+      │  │  │  ╚══════════════════╝           │  │            │
+      │  │  │                         [○]      │  │            │
+      │  │  └────────────────────────────────┘  │            │
+      │  └──────────────────────────────────────┘            │
+      │                        │                              │
+      │  Mouse Up              │                              │
+      ├───────────────────────>│                              │
+      │                        │  Calculate box bounds        │
+      │                        │  Convert to scene coords     │
+      │                        │                              │
+      │                        │  Find intersecting layers    │
+      │                        ├─────────────────────────────>│
+      │                        │                              │
+      │                        │  AABB Collision Detection:   │
+      │                        │  • Check each layer bounds   │
+      │                        │  • Test intersection         │
+      │                        │  • Collect selected IDs      │
+      │                        │                              │
+      │                        │  [■] and [△] intersect!      │
+      │                        │<─────────────────────────────┤
+      │                        │                              │
+      │                        │  Update selection state      │
+      │                        │  Show transformers           │
+      │                        │  Hide selection box          │
+      │                        │                              │
+      │  ┌──────────────────────────────────────┐            │
+      │  │  [■]✓   [△]✓   [○]                   │            │
+      │  │  Selected   Selected   Not selected  │            │
+      │  └──────────────────────────────────────┘            │
+      │<───────────────────────│                              │
+      │                        │                              │
+
+
+═══════════════════════════════════════════════════════════════════════════
+SCENARIO 2: Ctrl+Click to Toggle Selection
+═══════════════════════════════════════════════════════════════════════════
+
+    User                    Canvas                     Selection System
+      │                        │                              │
+      │  Already have          │                              │
+      │  [■] and [△] selected  │                              │
+      │                        │                              │
+      │  Ctrl + Click on [○]   │                              │
+      ├───────────────────────>│                              │
+      │                        │  Check Ctrl modifier         │
+      │                        │  isMultiSelectModifier()     │
+      │                        │                              │
+      │                        │  [○] not in selection        │
+      │                        │  Add to selection            │
+      │                        ├─────────────────────────────>│
+      │                        │                              │
+      │                        │  selectedLayerIds.add([○])   │
+      │                        │<─────────────────────────────┤
+      │                        │                              │
+      │  Now 3 elements        │                              │
+      │  selected: [■][△][○]   │                              │
+      │<───────────────────────│                              │
+      │                        │                              │
+      │  Ctrl + Click on [○]   │                              │
+      │  again                 │                              │
+      ├───────────────────────>│                              │
+      │                        │  Check Ctrl modifier         │
+      │                        │  [○] is in selection         │
+      │                        │  Remove from selection       │
+      │                        ├─────────────────────────────>│
+      │                        │                              │
+      │                        │  selectedLayerIds.delete([○])│
+      │                        │<─────────────────────────────┤
+      │                        │                              │
+      │  Back to 2 elements    │                              │
+      │  selected: [■][△]      │                              │
+      │<───────────────────────│                              │
+      │                        │                              │
+
+
+═══════════════════════════════════════════════════════════════════════════
+SCENARIO 3: Delete Multiple Selected Elements
+═══════════════════════════════════════════════════════════════════════════
+
+    User                    Canvas                     Keyboard Handler
+      │                        │                              │
+      │  Have [■][△][○]        │                              │
+      │  selected              │                              │
+      │                        │                              │
+      │  Press Delete          │                              │
+      ├───────────────────────────────────────────────────────>│
+      │                        │                              │
+      │                        │                     Check if text input?
+      │                        │                     No → continue
+      │                        │                              │
+      │                        │                     Get selectedLayerIds
+      │                        │                     = [■, △, ○]
+      │                        │                              │
+      │                        │<─────────────────────────────┤
+      │                        │  removeLayer([■])            │
+      │                        │  removeLayer([△])            │
+      │                        │  removeLayer([○])            │
+      │                        │                              │
+      │                        │  Clear from selection        │
+      │                        │  Destroy layer nodes         │
+      │                        │  Redraw canvas               │
+      │                        │                              │
+      │  All elements          │                              │
+      │  removed from canvas   │                              │
+      │<───────────────────────│                              │
+      │                        │                              │
+
+
+KEY COMPONENTS
+══════════════
+
+┌────────────────────────────────────────────────────────────────┐
+│ SceneCanvas (scene-canvas.ts)                                  │
+│                                                                 │
+│  State Management:                                              │
+│  ├─ selectedLayerIds: Set<string>  // Multi-select tracking    │
+│  ├─ selectionBox: Konva.Rect       // Visual selection box     │
+│  ├─ isSelecting: boolean           // Drag mode flag           │
+│  └─ selectionStart: Position       // Drag start point         │
+│                                                                 │
+│  Event Handlers:                                                │
+│  ├─ mousedown: Start selection                                 │
+│  ├─ mousemove: Update selection box                            │
+│  └─ mouseup: Finalize selection                                │
+│                                                                 │
+│  Selection Methods:                                             │
+│  ├─ selectLayers(ids: string[])    // Batch select             │
+│  ├─ addToSelection(id: string)     // Add single               │
+│  ├─ removeFromSelection(id: string)// Remove single            │
+│  ├─ getSelectedLayerIds()          // Get current selection    │
+│  ├─ handleLayerSelection()         // Click handler            │
+│  └─ isMultiSelectModifier()        // Check Ctrl/Cmd           │
+└────────────────────────────────────────────────────────────────┘
+
+
+INTERSECTION DETECTION (AABB)
+══════════════════════════════
+
+Selection Box:          Layer Node:
+  (x1, y1)                 (nx1, ny1)
+     ┌─────────┐              ┌─────┐
+     │         │              │     │
+     │         │              │     │
+     └─────────┘              └─────┘
+            (x2, y2)               (nx2, ny2)
+
+Intersection Test:
+  NOT (nx2 < x1  OR  nx1 > x2  OR  ny2 < y1  OR  ny1 > y2)
+
+If TRUE → Layer is selected
+If FALSE → Layer is not selected
+
+
+SELECTION BOX STYLING
+══════════════════════
+
+┌──────────────────────────────┐
+│ Konva.Rect Configuration     │
+├──────────────────────────────┤
+│ fill: rgba(0,123,255,0.1)    │  ← Light blue, 10% opacity
+│ stroke: #007bff              │  ← Solid blue border
+│ strokeWidth: 2               │  ← 2px border
+│ dash: [5, 5]                 │  ← Dashed pattern
+│ visible: false (initially)   │  ← Hidden until drag
+└──────────────────────────────┘
+
+Visual Result:
+  ╔═ ═ ═ ═ ═ ═ ═ ═ ═╗
+  ║                  ║
+  ║  Light blue fill ║
+  ║  with dashed     ║
+  ║  blue border     ║
+  ║                  ║
+  ╚═ ═ ═ ═ ═ ═ ═ ═ ═╝
+
+
+KEYBOARD SHORTCUTS
+══════════════════
+
+  Ctrl+Click      →  Add/Remove element from selection
+  Cmd+Click       →  Add/Remove element from selection (Mac)
+  Delete          →  Delete all selected elements
+  Backspace       →  Delete all selected elements
+  Escape          →  Deselect all elements
+  Space+Drag      →  Pan mode (no selection)
+
+
+COORDINATE TRANSFORMATIONS
+═══════════════════════════
+
+Screen Coordinates → Scene Coordinates:
+
+  sceneX = (screenX - layerPosX) / zoom
+  sceneY = (screenY - layerPosY) / zoom
+
+Why needed?
+  • Canvas can be panned (layerPos)
+  • Canvas can be zoomed (scale)
+  • Selection box is in screen space
+  • Layer bounds are in scene space
+  • Must convert to same coordinate system for comparison
+
+
+STATE MANAGEMENT
+════════════════
+
+Single Selection (Legacy):
+  selectedLayerId: string | null
+
+Multi Selection (New):
+  selectedLayerIds: Set<string>
+
+Backward Compatibility:
+  • selectedLayerId is set to first selected element
+  • Existing code continues to work
+  • New code can use getSelectedLayerIds()
+
+
+PERFORMANCE CONSIDERATIONS
+═══════════════════════════
+
+✓ Set<string> for O(1) lookup/add/remove
+✓ AABB for fast intersection detection
+✓ Only check layers during drag end (not every frame)
+✓ Batch draw updates (batchDraw())
+✓ Minimal DOM manipulation
